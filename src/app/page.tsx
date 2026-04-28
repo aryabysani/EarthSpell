@@ -229,15 +229,12 @@ export default function Home() {
       {/* bottom credit */}
       <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-1.5">
         <p className="eyebrow" style={{ color: "rgba(255,255,255,0.18)" }}>NASA · USGS Landsat program</p>
-        <a
-          href="https://aryab.in"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="eyebrow transition hover:opacity-60"
-          style={{ color: "rgba(201,168,76,0.35)", textDecoration: "none" }}
-        >
-          Built by aryabysani
-        </a>
+        <p className="eyebrow" style={{ color: "rgba(255,255,255,0.18)" }}>
+          Built by{" "}
+          <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>
+            arya
+          </a>
+        </p>
       </div>
     </main>
   );
@@ -252,6 +249,8 @@ interface ResultViewProps {
 }
 
 function ResultView({ name, results, loading, error, canAct, displayRef, onShuffle, onReset }: ResultViewProps) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(name);
   const locations = useMemo(
     () =>
       results
@@ -303,15 +302,13 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
           New name
         </button>
 
-        <a
-          href="https://aryab.in"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="eyebrow transition hover:opacity-60"
-          style={{ color: "rgba(201,168,76,0.45)", textDecoration: "none" }}
+        <span
+          className="eyebrow"
+          style={{ color: "rgba(255,255,255,0.18)" }}
         >
-          Built by aryabysani
-        </a>
+          Built by{" "}
+          <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
+        </span>
       </header>
 
       {/* body */}
@@ -322,25 +319,62 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
           Earth has spelled
         </p>
 
-        {/* the name — large, serif, animated */}
-        <h1
-          className="font-display text-center font-light text-white"
-          style={{
-            fontSize: `clamp(3rem, ${Math.max(4.5, 15 - name.replace(/ /g, "").length * 0.7)}vw, 9rem)`,
-            lineHeight: 0.95,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          {name.split("").map((ch, i) => (
-            <span
-              key={`${ch}-${i}`}
-              className="inline-block opacity-0 animate-rise"
-              style={{ animationDelay: `${i * 60}ms`, color: ch === " " ? "transparent" : undefined }}
+        {/* the name — click to edit */}
+        {editing ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const v = draft.toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 12).trim();
+              setEditing(false);
+              if (v) onReset();
+            }}
+            className="flex flex-col items-center gap-3"
+          >
+            <input
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value.toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 12))}
+              className="bg-transparent text-center font-display font-light text-white outline-none border-b border-[#c9a84c]/50 focus:border-[#c9a84c] transition-colors"
+              style={{
+                fontSize: `clamp(2.5rem, ${Math.max(4.5, 15 - draft.replace(/ /g, "").length * 0.7)}vw, 9rem)`,
+                lineHeight: 0.95,
+                letterSpacing: "-0.02em",
+                minWidth: "3ch",
+                width: `${Math.max(draft.length, 3)}ch`,
+              }}
+              onKeyDown={(e) => { if (e.key === "Escape") { setEditing(false); setDraft(name); } }}
+            />
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-[0.7rem] uppercase tracking-[0.3em] transition"
+              style={{ borderColor: "var(--gold)", color: "var(--gold)" }}
             >
-              {ch === " " ? " " : ch}
-            </span>
-          ))}
-        </h1>
+              Search <ArrowRight size={12} />
+            </button>
+          </form>
+        ) : (
+          <h1
+            className="group relative cursor-pointer font-display text-center font-light text-white"
+            style={{
+              fontSize: `clamp(3rem, ${Math.max(4.5, 15 - name.replace(/ /g, "").length * 0.7)}vw, 9rem)`,
+              lineHeight: 0.95,
+              letterSpacing: "-0.02em",
+            }}
+            onClick={() => { setDraft(name); setEditing(true); }}
+            title="Click to edit"
+          >
+            {name.split("").map((ch, i) => (
+              <span
+                key={`${ch}-${i}`}
+                className="inline-block opacity-0 animate-rise"
+                style={{ animationDelay: `${i * 60}ms`, color: ch === " " ? "transparent" : undefined }}
+              >
+                {ch === " " ? " " : ch}
+              </span>
+            ))}
+            <span className="absolute -right-8 top-1/2 -translate-y-1/2 text-white/30 opacity-0 transition group-hover:opacity-100" style={{ fontSize: "1.2rem" }}>✎</span>
+          </h1>
+        )}
 
         {/* thin gold rule */}
         <div
@@ -427,15 +461,13 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
         <p className="mt-14 eyebrow" style={{ color: "rgba(255,255,255,0.18)" }}>
           NASA · USGS Landsat program
         </p>
-        <a
-          href="https://aryab.in"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-1.5 eyebrow transition hover:opacity-60"
-          style={{ color: "rgba(201,168,76,0.35)", textDecoration: "none" }}
+        <p
+          className="mt-1.5 eyebrow"
+          style={{ color: "rgba(255,255,255,0.18)" }}
         >
-          Built by aryabysani
-        </a>
+          Built by{" "}
+          <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
+        </p>
       </section>
     </main>
   );

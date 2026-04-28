@@ -35,8 +35,8 @@ export function LetterCard({ char, image, index }: LetterCardProps) {
     ? `https://www.google.com/maps/search/${encodeURIComponent(image.location)}`
     : null;
 
-  const imgSize = expanded ? "w-56 sm:w-72" : "w-44 sm:w-52";
-  const photoHeight = expanded ? "h-72 sm:h-96" : "h-44 sm:h-52";
+  const imgSize = expanded ? "w-[min(14rem,38vw)]" : "w-[min(11rem,28vw)]";
+  const photoHeight = expanded ? "h-[min(18rem,48vw)]" : "h-[min(11rem,28vw)]";
 
   return (
     <article

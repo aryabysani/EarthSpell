@@ -15,7 +15,7 @@ export const NameDisplay = forwardRef<HTMLDivElement, NameDisplayProps>(function
 ) {
   if (loading) {
     return (
-      <div className="mt-6 flex w-full items-end justify-center gap-4 overflow-x-auto pb-2">
+      <div className="mt-6 flex w-full flex-wrap items-end justify-center gap-4 pb-2">
         {Array.from({ length: 5 }).map((_, index) => (
           <div
             key={index}
