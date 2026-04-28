@@ -118,46 +118,26 @@ export default function Home() {
       <div aria-hidden className="corner corner--bl" />
       <div aria-hidden className="corner corner--br" />
 
-      {/* ── 3-D Globe ── */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        {/* glow behind globe */}
-        <div
-          aria-hidden
-          className="absolute"
-          style={{
-            width: "min(72vmin, 600px)",
-            height: "min(72vmin, 600px)",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(201,168,76,0.13) 0%, transparent 70%)",
-            animation: "glow-pulse 5s ease-in-out infinite alternate",
-          }}
-        />
+      {/* ── Background video ── */}
+      <video
+        aria-hidden
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        style={{ opacity: 0.45 }}
+      >
+        <source src="/earth-bg.mp4" type="video/mp4" />
+      </video>
 
-        {/* orbit rings */}
-        <div
-          aria-hidden
-          className="orbit absolute"
-          style={{ width: "min(80vmin, 660px)", height: "min(80vmin, 660px)" }}
-        />
-        <div
-          aria-hidden
-          className="orbit orbit-2 absolute"
-          style={{ width: "min(60vmin, 490px)", height: "min(60vmin, 490px)" }}
-        />
-
-        {/* globe canvas */}
-        <div style={{ width: "min(60vmin, 500px)", height: "min(60vmin, 500px)", position: "relative", zIndex: 2 }}>
-          <GlobeClient />
-        </div>
-      </div>
-
-      {/* radial vignette so text is legible over globe */}
+      {/* vignette — darkens edges so text stays legible */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 62% 62% at 50% 50%, transparent 25%, rgba(0,0,0,0.72) 68%, #000 100%)",
+            "radial-gradient(ellipse 70% 70% at 50% 50%, transparent 10%, rgba(0,0,0,0.55) 60%, #000 100%)",
         }}
       />
 
