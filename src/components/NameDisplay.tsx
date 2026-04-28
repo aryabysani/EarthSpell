@@ -15,7 +15,7 @@ export const NameDisplay = forwardRef<HTMLDivElement, NameDisplayProps>(function
 ) {
   if (loading) {
     return (
-      <div className="mt-6 flex w-full justify-center gap-4 overflow-x-auto pb-2">
+      <div className="mt-6 flex w-full items-end justify-center gap-4 overflow-x-auto pb-2">
         {Array.from({ length: 5 }).map((_, index) => (
           <div
             key={index}
@@ -34,7 +34,7 @@ export const NameDisplay = forwardRef<HTMLDivElement, NameDisplayProps>(function
   return (
     <div
       ref={ref}
-      className="earthstrip-capture mt-6 flex w-full justify-center gap-4 overflow-x-auto px-2 pb-2"
+      className="earthstrip-capture mt-6 flex w-full items-end justify-center gap-4 overflow-x-auto px-2 pb-2"
     >
       {results.map((result, index) => (
         <LetterCard
