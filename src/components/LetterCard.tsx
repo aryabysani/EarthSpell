@@ -36,32 +36,38 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
     ? `https://www.google.com/maps/search/${encodeURIComponent(image.location)}`
     : null;
 
-  // Fit all letters in viewport: 96vw shared across `total` cards minus gaps (~8px each)
-  const maxVw = Math.floor(94 / total);
-  const imgSize = expanded
-    ? `w-[min(14rem,${Math.min(maxVw + 10, 42)}vw)]`
-    : `w-[min(11rem,${maxVw}vw)]`;
-  const photoHeight = expanded
-    ? `h-[min(18rem,${Math.min(maxVw + 10, 42)}vw)]`
-    : `h-[min(11rem,${maxVw}vw)]`;
+  // Use inline styles for dynamic sizing (Tailwind can't JIT dynamic values)
+  const maxVw = Math.max(6, Math.floor(94 / total));
+  const cardW = expanded ? Math.min(maxVw + 10, 42) : maxVw;
+  const cardMaxRem = expanded ? 14 : 11;
 
+  const sizeStyle: React.CSSProperties = {
+    width: `min(${cardMaxRem}rem, ${cardW}vw)`,
+    flexShrink: 0,
+  };
+  const photoStyle: React.CSSProperties = {
+    width: "100%",
+    height: `min(${cardMaxRem}rem, ${cardW}vw)`,
+    position: "relative" as const,
+    overflow: "hidden",
+    border: "1px solid rgba(255,255,255,0.08)",
+    transition: "all 0.5s",
+  };
+
+  const letterFontSize = expanded
+    ? `clamp(1.8rem, ${(cardW * 0.55).toFixed(1)}vw, 4rem)`
+    : `clamp(1.2rem, ${(cardW * 0.42).toFixed(1)}vw, 3rem)`;
   const nameFontSize = expanded ? "clamp(0.55rem,1.5vw,0.85rem)" : "clamp(0.42rem,1.1vw,0.65rem)";
   const coordFontSize = expanded ? "clamp(0.48rem,1.3vw,0.78rem)" : "clamp(0.38rem,0.95vw,0.58rem)";
-  const letterFontSize = expanded
-    ? `clamp(1.8rem,${maxVw * 0.55}vw,4rem)`
-    : `clamp(1.3rem,${maxVw * 0.42}vw,3rem)`;
 
   return (
     <article
-      className={`group relative shrink-0 animate-rise opacity-0 cursor-pointer select-none transition-all duration-500 ${imgSize}`}
-      style={{ animationDelay: `${index * 80}ms` }}
+      className="group relative animate-rise opacity-0 cursor-pointer select-none"
+      style={{ ...sizeStyle, animationDelay: `${index * 80}ms`, transition: "width 0.5s, opacity 0s" }}
       onClick={() => setExpanded((e) => !e)}
     >
       {/* ── photo ── */}
-      <div
-        className={`relative overflow-hidden transition-all duration-500 ${photoHeight}`}
-        style={{ border: "1px solid rgba(255,255,255,0.08)" }}
-      >
+      <div style={photoStyle}>
         {/* gold corner ticks */}
         <span aria-hidden className="absolute -left-px -top-px z-10 h-2.5 w-2.5" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderLeft: "1px solid rgba(201,168,76,0.5)" }} />
         <span aria-hidden className="absolute -right-px -top-px z-10 h-2.5 w-2.5" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderRight: "1px solid rgba(201,168,76,0.5)" }} />
@@ -73,7 +79,7 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
             src={image.url}
             alt={image.description || `Landsat image for ${char}`}
             fill
-            sizes="(max-width: 640px) 100px, 176px"
+            sizes="(max-width: 640px) 15vw, 176px"
             className={`object-cover transition duration-700 ${expanded ? "scale-105" : "group-hover:scale-105"} ${loaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setLoaded(true)}
           />
@@ -102,8 +108,8 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
         {/* letter bottom-left */}
         <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 via-black/20 to-transparent px-1.5 py-1 sm:px-3 sm:py-2">
           <span
-            className="font-display font-light leading-none text-white transition-all duration-500"
-            style={{ fontSize: letterFontSize }}
+            className="font-display font-light leading-none text-white"
+            style={{ fontSize: letterFontSize, transition: "font-size 0.5s" }}
           >
             {char}
           </span>
@@ -116,12 +122,13 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
         style={{ maxHeight: expanded ? "120px" : "52px", paddingTop: "6px" }}
       >
         <p
-          className="truncate font-medium text-white transition-all duration-500"
+          className="truncate font-medium text-white"
           style={{
             fontSize: nameFontSize,
             letterSpacing: expanded ? "0.05em" : "0.1em",
             textTransform: "uppercase",
             opacity: 0.8,
+            transition: "font-size 0.5s, letter-spacing 0.5s",
           }}
         >
           {image?.location || char}
@@ -133,13 +140,14 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="mt-0.5 block font-mono transition-all duration-500 hover:opacity-100"
+            className="mt-0.5 block font-mono hover:opacity-100"
             style={{
               fontSize: coordFontSize,
               color: "rgba(201,168,76,0.85)",
               opacity: 0.8,
               textDecoration: "none",
               letterSpacing: "0.02em",
+              transition: "font-size 0.5s",
             }}
           >
             {toDMS(image!.lat as number, "N", "S")}

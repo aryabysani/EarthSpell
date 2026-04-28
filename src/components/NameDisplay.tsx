@@ -19,8 +19,8 @@ export const NameDisplay = forwardRef<HTMLDivElement, NameDisplayProps>(function
         {Array.from({ length: 5 }).map((_, index) => (
           <div
             key={index}
-            className="animate-shimmer bg-[linear-gradient(110deg,#0a0a0a_8%,#1a1a1a_18%,#0a0a0a_33%)] bg-[length:200%_100%]"
-            style={{ width: "min(11rem,20vw)", height: "min(11rem,20vw)", border: "1px solid rgba(255,255,255,0.07)" }}
+            className="h-28 w-28 shrink-0 animate-shimmer bg-[linear-gradient(110deg,#0a0a0a_8%,#1a1a1a_18%,#0a0a0a_33%)] bg-[length:200%_100%] sm:h-44 sm:w-44"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
           />
         ))}
       </div>
