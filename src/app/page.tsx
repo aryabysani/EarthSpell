@@ -227,8 +227,17 @@ export default function Home() {
       </section>
 
       {/* bottom credit */}
-      <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+      <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-1.5">
         <p className="eyebrow" style={{ color: "rgba(255,255,255,0.18)" }}>NASA · USGS Landsat program</p>
+        <a
+          href="https://aryab.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="eyebrow transition hover:opacity-60"
+          style={{ color: "rgba(201,168,76,0.35)", textDecoration: "none" }}
+        >
+          Built by aryabysani
+        </a>
       </div>
     </main>
   );
@@ -294,9 +303,15 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
           New name
         </button>
 
-        <p className="eyebrow hidden sm:block" style={{ color: "rgba(255,255,255,0.22)" }}>
-          Landsat archive
-        </p>
+        <a
+          href="https://aryab.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="eyebrow transition hover:opacity-60"
+          style={{ color: "rgba(201,168,76,0.45)", textDecoration: "none" }}
+        >
+          Built by aryabysani
+        </a>
       </header>
 
       {/* body */}
@@ -412,6 +427,15 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
         <p className="mt-14 eyebrow" style={{ color: "rgba(255,255,255,0.18)" }}>
           NASA · USGS Landsat program
         </p>
+        <a
+          href="https://aryab.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-1.5 eyebrow transition hover:opacity-60"
+          style={{ color: "rgba(201,168,76,0.35)", textDecoration: "none" }}
+        >
+          Built by aryabysani
+        </a>
       </section>
     </main>
   );
