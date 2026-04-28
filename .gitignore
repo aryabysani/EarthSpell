@@ -4,7 +4,7 @@ out
 dist
 .env*.local
 scraper/downloaded_images
-public/*.mp4
+# public/*.mp4  # re-enabled: compressed video is small enough for git
 scraper/serviceAccountKey.json
 scraper/__pycache__
 *.log
