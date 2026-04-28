@@ -123,9 +123,9 @@ export default function Home() {
         <source src="https://storage.googleapis.com/earthspell-34aed.firebasestorage.app/earth-bg.mp4" type="video/mp4" />
       </video>
 
-      {/* deep space atmosphere — dark at edges, clear in centre */}
+      {/* dark overlay so text always readable — heavier in centre where text sits */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{
-        background: "radial-gradient(ellipse 65% 65% at 50% 48%, transparent 20%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.92) 100%)"
+        background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.62) 55%, rgba(0,0,0,0.95) 100%)"
       }} />
 
       {/* gold atmospheric halo around the globe */}
@@ -135,7 +135,7 @@ export default function Home() {
 
       {/* content */}
       <section className="relative z-10 flex h-full flex-col items-center justify-center px-5">
-        <p className="eyebrow mb-6 sm:mb-8" style={{ color: "rgba(255,255,255,0.7)", textShadow: "0 1px 12px rgba(0,0,0,0.8)" }}>
+        <p className="eyebrow mb-6 sm:mb-8" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 8px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1)" }}>
           Landsat · Earth Observatory
         </p>
 
@@ -145,12 +145,12 @@ export default function Home() {
             fontSize: "clamp(2.4rem, 6.5vw, 5.5rem)",
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
-            textShadow: "0 2px 24px rgba(0,0,0,0.9)",
+            textShadow: "0 0 40px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,1), 0 4px 32px rgba(0,0,0,0.9)",
           }}
         >
           Your name,
           <br />
-          <em style={{ color: "var(--gold)", fontStyle: "italic", filter: "drop-shadow(0 0 18px rgba(201,168,76,0.5))" }}>
+          <em style={{ color: "var(--gold)", fontStyle: "italic", textShadow: "0 0 40px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,1), 0 0 60px rgba(201,168,76,0.4)" }}>
             written in Earth
           </em>
         </h1>
@@ -160,8 +160,8 @@ export default function Home() {
           style={{
             fontSize: "clamp(0.72rem, 1.8vw, 0.88rem)",
             lineHeight: 1.7,
-            color: "rgba(255,255,255,0.65)",
-            textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+            color: "rgba(255,255,255,0.9)",
+            textShadow: "0 1px 4px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1)",
           }}
         >
           Real Landsat satellite imagery arranged into letters shaped by rivers, ridgelines, and coastlines.

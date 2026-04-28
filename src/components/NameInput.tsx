@@ -21,8 +21,9 @@ export function NameInput({ value, onChange }: NameInputProps) {
         fontFamily: "var(--font-fraunces), serif",
         letterSpacing: "0.28em",
         fontSize: "clamp(1rem, 2.5vw, 1.4rem)",
+        textShadow: "0 1px 6px rgba(0,0,0,1)",
       }}
-      className="h-14 w-full border-b border-white/30 bg-transparent text-center uppercase text-white outline-none transition-colors placeholder:text-white/40 focus:border-[#c9a84c]/80"
+      className="h-14 w-full border-b border-white/40 bg-transparent text-center uppercase text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#c9a84c] [text-shadow:0_1px_6px_rgba(0,0,0,1)]"
     />
   );
 }
