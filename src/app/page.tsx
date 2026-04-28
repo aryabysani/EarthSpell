@@ -128,7 +128,7 @@ export default function Home() {
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         style={{ opacity: 0.45 }}
       >
-        <source src="/earth-bg.mp4" type="video/mp4" />
+        <source src="https://storage.googleapis.com/earthspell-34aed.firebasestorage.app/earth-bg.mp4" type="video/mp4" />
       </video>
 
       {/* vignette — darkens edges so text stays legible */}
