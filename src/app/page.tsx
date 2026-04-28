@@ -194,10 +194,10 @@ export default function Home() {
       </section>
 
       {/* bottom credit */}
-      <div className="absolute bottom-5 left-0 right-0 flex flex-col items-center gap-1">
+      <div className="absolute bottom-5 left-0 right-0 z-20 flex flex-col items-center gap-1">
         <p className="eyebrow" style={{ color: "rgba(255,255,255,0.35)" }}>
           Images credit:{" "}
-          <a href="https://nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.55)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+          <a href="https://www.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.65)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>
             NASA
           </a>
           {" "}· USGS Landsat
@@ -264,7 +264,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
       {/* body */}
       <section className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-3 pb-14 pt-6 sm:px-5 sm:pt-14">
         <p className="eyebrow mb-3" style={{ color: "rgba(255,255,255,0.28)", fontSize: "0.6rem" }}>
-          Earth has spelled
+          The Earth has spelled
         </p>
 
         {/* name — single line, tap to edit */}
@@ -340,7 +340,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
 
         <p className="mt-12 eyebrow" style={{ color: "rgba(255,255,255,0.28)" }}>
           Images credit:{" "}
-          <a href="https://nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.45)", textDecoration: "underline", textUnderlineOffset: "3px" }}>NASA</a>
+          <a href="https://www.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.5)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>NASA</a>
           {" "}· USGS Landsat
         </p>
         <p className="mt-1 eyebrow" style={{ color: "rgba(255,255,255,0.28)" }}>
