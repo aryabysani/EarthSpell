@@ -22,7 +22,7 @@ export function NameInput({ value, onChange }: NameInputProps) {
         letterSpacing: "0.28em",
         fontSize: "clamp(1rem, 2.5vw, 1.4rem)",
       }}
-      className="h-14 w-full border-b border-white/15 bg-transparent text-center uppercase text-white outline-none transition-colors placeholder:text-white/20 focus:border-[#c9a84c]/60"
+      className="h-14 w-full border-b border-white/30 bg-transparent text-center uppercase text-white outline-none transition-colors placeholder:text-white/40 focus:border-[#c9a84c]/80"
     />
   );
 }

@@ -9,16 +9,6 @@ import { NameInput } from "@/components/NameInput";
 import { ShareButton } from "@/components/ShareButton";
 import type { LetterImage, LetterResult, LettersApiResponse } from "@/types";
 
-function toDMS(deg: number, posDir: string, negDir: string): string {
-  const d = Math.abs(deg);
-  const degrees = Math.floor(d);
-  const minutesFloat = (d - degrees) * 60;
-  const minutes = Math.floor(minutesFloat);
-  const seconds = ((minutesFloat - minutes) * 60).toFixed(1);
-  const dir = deg >= 0 ? posDir : negDir;
-  return `${degrees}°${String(minutes).padStart(2, "0")}'${seconds.padStart(4, "0")}" ${dir}`;
-}
-
 function encodeChars(name: string) {
   return name.split("").map((c) => encodeURIComponent(c)).join(",");
 }
@@ -33,6 +23,13 @@ function pickDifferentVariant(variants: LetterImage[], used: Set<string>, curren
   const img = pool[Math.floor(Math.random() * pool.length)] ?? null;
   if (img?.filename) used.add(img.filename);
   return img;
+}
+
+// Font size that keeps the name on one line: 88vw shared across all chars
+function nameFontSize(str: string) {
+  const chars = Math.max(str.trim().length, 1);
+  const vw = Math.min(88 / chars, 10);
+  return `clamp(1.6rem, ${vw}vw, 7rem)`;
 }
 
 export default function Home() {
@@ -112,109 +109,100 @@ export default function Home() {
 
   return (
     <main className="relative h-screen overflow-hidden bg-black">
-      {/* corner marks */}
       <div aria-hidden className="corner corner--tl" />
       <div aria-hidden className="corner corner--tr" />
       <div aria-hidden className="corner corner--bl" />
       <div aria-hidden className="corner corner--br" />
 
-      {/* ── Background video ── */}
+      {/* background video — brighter, vivid */}
       <video
-        aria-hidden
-        autoPlay
-        loop
-        muted
-        playsInline
+        aria-hidden autoPlay loop muted playsInline
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-        style={{ opacity: 0.45 }}
+        style={{ opacity: 0.75, filter: "saturate(1.6) brightness(1.1) contrast(1.05)" }}
       >
         <source src="https://storage.googleapis.com/earthspell-34aed.firebasestorage.app/earth-bg.mp4" type="video/mp4" />
       </video>
 
-      {/* vignette — darkens edges so text stays legible */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 70% at 50% 50%, transparent 10%, rgba(0,0,0,0.55) 60%, #000 100%)",
-        }}
-      />
+      {/* deep space atmosphere — dark at edges, clear in centre */}
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{
+        background: "radial-gradient(ellipse 65% 65% at 50% 48%, transparent 20%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.92) 100%)"
+      }} />
 
-      {/* ── Content ── */}
-      <section className="relative z-10 flex h-full flex-col items-center justify-center px-6">
-        {/* eyebrow */}
-        <p className="eyebrow mb-8">Landsat · Earth Observatory</p>
+      {/* gold atmospheric halo around the globe */}
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{
+        background: "radial-gradient(ellipse 55% 55% at 50% 48%, transparent 35%, rgba(201,168,76,0.07) 60%, transparent 75%)"
+      }} />
 
-        {/* headline */}
+      {/* content */}
+      <section className="relative z-10 flex h-full flex-col items-center justify-center px-5">
+        <p className="eyebrow mb-6 sm:mb-8" style={{ color: "rgba(255,255,255,0.7)", textShadow: "0 1px 12px rgba(0,0,0,0.8)" }}>
+          Landsat · Earth Observatory
+        </p>
+
         <h1
           className="font-display text-center font-light text-white"
-          style={{ fontSize: "clamp(2.6rem, 6.5vw, 5.5rem)", lineHeight: 1.0, letterSpacing: "-0.02em" }}
+          style={{
+            fontSize: "clamp(2.4rem, 6.5vw, 5.5rem)",
+            lineHeight: 1.05,
+            letterSpacing: "-0.02em",
+            textShadow: "0 2px 24px rgba(0,0,0,0.9)",
+          }}
         >
           Your name,
           <br />
-          <em style={{ color: "var(--gold)", fontStyle: "italic" }}>written in Earth</em>
+          <em style={{ color: "var(--gold)", fontStyle: "italic", filter: "drop-shadow(0 0 18px rgba(201,168,76,0.5))" }}>
+            written in Earth
+          </em>
         </h1>
 
-        {/* sub-copy */}
         <p
-          className="mt-4 max-w-xs text-center text-white/40 sm:mt-5 sm:max-w-sm"
-          style={{ fontSize: "clamp(0.72rem, 1.8vw, 0.9rem)", lineHeight: 1.7 }}
+          className="mt-5 max-w-xs text-center sm:max-w-sm"
+          style={{
+            fontSize: "clamp(0.72rem, 1.8vw, 0.88rem)",
+            lineHeight: 1.7,
+            color: "rgba(255,255,255,0.65)",
+            textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+          }}
         >
-          Real Landsat satellite imagery arranged into letters shaped by rivers,
-          ridgelines, and coastlines.
+          Real Landsat satellite imagery arranged into letters shaped by rivers, ridgelines, and coastlines.
         </p>
 
-        {/* form */}
-        <form onSubmit={handleSubmit} className="mt-8 w-full max-w-[18rem] sm:mt-10 sm:max-w-sm">
+        <form onSubmit={handleSubmit} className="mt-8 w-full max-w-[17rem] sm:mt-10 sm:max-w-sm">
           <NameInput value={name} onChange={setName} />
           <div className="mt-3 flex gap-2">
             <button
               type="submit"
               disabled={!name.trim()}
-              className="flex flex-1 items-center justify-center gap-2 rounded-full border py-3 text-[0.72rem] font-medium uppercase tracking-[0.3em] transition disabled:cursor-not-allowed disabled:opacity-25"
-              style={{ borderColor: "var(--gold)", color: "var(--gold)", background: "transparent" }}
+              className="flex flex-1 items-center justify-center gap-2 rounded-full border py-3 text-[0.7rem] font-medium uppercase tracking-[0.28em] transition disabled:cursor-not-allowed disabled:opacity-25"
+              style={{ borderColor: "var(--gold)", color: "var(--gold)", background: "rgba(0,0,0,0.4)" }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gold)"; e.currentTarget.style.color = "#000"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--gold)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.4)"; e.currentTarget.style.color = "var(--gold)"; }}
             >
-              Enter
-              <ArrowRight size={13} aria-hidden />
+              Enter <ArrowRight size={12} aria-hidden />
             </button>
             {name.trim() && (
               <button
-                type="button"
-                onClick={() => setName("")}
-                className="flex items-center justify-center rounded-full border border-white/15 px-4 py-3 text-[0.72rem] text-white/40 transition hover:border-white/30 hover:text-white/70"
-                title="Clear"
+                type="button" onClick={() => setName("")}
+                className="flex items-center justify-center rounded-full border border-white/20 px-4 py-3 text-[0.7rem] text-white/60 transition hover:border-white/40 hover:text-white/90"
+                style={{ background: "rgba(0,0,0,0.4)" }}
               >
                 ✕
               </button>
             )}
           </div>
-          <p className="mt-2 text-center text-white/20" style={{ fontSize: "0.6rem", letterSpacing: "0.3em" }}>
-            PRESS ENTER OR CLICK
-          </p>
         </form>
-
-        {/* sample prompts */}
-        <div className="mt-8 flex items-center gap-6 text-white/25" style={{ fontSize: "0.62rem", letterSpacing: "0.4em" }}>
-          {["AURORA", "EARTH", "VOYAGER"].map((s) => (
-            <button
-              key={s}
-              type="button"
-              className="uppercase transition hover:text-white/70"
-              onClick={() => { setName(s); setSubmitted(true); }}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
       </section>
 
       {/* bottom credit */}
-      <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-1.5">
-        <p className="eyebrow" style={{ color: "rgba(255,255,255,0.18)" }}>NASA · USGS Landsat program</p>
-        <p className="eyebrow" style={{ color: "rgba(255,255,255,0.18)" }}>
+      <div className="absolute bottom-5 left-0 right-0 flex flex-col items-center gap-1">
+        <p className="eyebrow" style={{ color: "rgba(255,255,255,0.35)" }}>
+          Images credit:{" "}
+          <a href="https://nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.55)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+            NASA
+          </a>
+          {" "}· USGS Landsat
+        </p>
+        <p className="eyebrow" style={{ color: "rgba(255,255,255,0.35)" }}>
           Built by{" "}
           <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>
             arya
@@ -236,192 +224,98 @@ interface ResultViewProps {
 function ResultView({ name, results, loading, error, canAct, displayRef, onShuffle, onReset, onSearch }: ResultViewProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
-  const locations = useMemo(
-    () =>
-      results
-        .map((r) => r.image)
-        .filter((img): img is LetterImage => Boolean(img))
-        .map((img) => ({
-          location: img.location || "",
-          lat: typeof img.lat === "number" ? img.lat : null,
-          lng: typeof img.lng === "number" ? img.lng : null,
-        })),
-    [results],
-  );
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-black">
-      {/* corner marks */}
       <div aria-hidden className="corner corner--tl" />
       <div aria-hidden className="corner corner--tr" />
       <div aria-hidden className="corner corner--bl" />
       <div aria-hidden className="corner corner--br" />
 
-      {/* ghost globe — top right */}
+      {/* ghost globe top-right, hidden on small screens */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-[15vmin] -top-[15vmin] opacity-30"
-        style={{ width: "min(55vmin, 420px)", height: "min(55vmin, 420px)" }}
+        className="pointer-events-none absolute -right-[15vmin] -top-[15vmin] hidden opacity-25 sm:block"
+        style={{ width: "min(50vmin, 380px)", height: "min(50vmin, 380px)" }}
       >
         <GlobeClient />
       </div>
-      {/* fade it out */}
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 55% at 88% -5%, transparent 20%, rgba(0,0,0,0.88) 60%, #000 85%)",
-        }}
+        aria-hidden className="pointer-events-none absolute inset-0 hidden sm:block"
+        style={{ background: "radial-gradient(ellipse 60% 55% at 88% -5%, transparent 20%, rgba(0,0,0,0.88) 60%, #000 85%)" }}
       />
 
       {/* top nav */}
-      <header className="relative z-10 flex items-center justify-between px-4 pt-5 sm:px-10 sm:pt-7">
+      <header className="relative z-10 flex items-center justify-between px-4 pt-5 sm:px-8 sm:pt-7">
         <button
-          type="button"
-          onClick={onReset}
+          type="button" onClick={onReset}
           className="group inline-flex items-center gap-2 text-white/40 transition hover:text-white"
-          style={{ fontSize: "0.68rem", letterSpacing: "0.25em", textTransform: "uppercase" }}
+          style={{ fontSize: "0.65rem", letterSpacing: "0.25em", textTransform: "uppercase" }}
         >
-          <ArrowLeft size={12} className="transition group-hover:-translate-x-1" />
+          <ArrowLeft size={11} className="transition group-hover:-translate-x-1" />
           New name
         </button>
-
-        <span
-          className="eyebrow"
-          style={{ color: "rgba(255,255,255,0.18)", fontSize: "0.6rem" }}
-        >
+        <span className="eyebrow" style={{ color: "rgba(255,255,255,0.18)", fontSize: "0.58rem" }}>
           Built by{" "}
           <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
         </span>
       </header>
 
       {/* body */}
-      <section className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-3 pb-16 pt-8 sm:px-5 sm:pt-16">
-
-        {/* "Earth has spelled" eyebrow */}
-        <p className="eyebrow mb-4" style={{ color: "rgba(255,255,255,0.28)" }}>
+      <section className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-3 pb-14 pt-6 sm:px-5 sm:pt-14">
+        <p className="eyebrow mb-3" style={{ color: "rgba(255,255,255,0.28)", fontSize: "0.6rem" }}>
           Earth has spelled
         </p>
 
-        {/* the name — click to edit */}
+        {/* name — single line, tap to edit */}
         {editing ? (
           <form
             onSubmit={(e) => {
               e.preventDefault();
               const v = draft.toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 12).trim();
-              if (v && v !== name) {
-                setEditing(false);
-                onSearch(v);
-              } else {
-                setEditing(false);
-              }
+              if (v && v !== name) { setEditing(false); onSearch(v); }
+              else setEditing(false);
             }}
-            className="flex flex-col items-center gap-3"
+            className="flex w-full flex-col items-center gap-3"
           >
             <input
               autoFocus
               value={draft}
               onChange={(e) => setDraft(e.target.value.toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 12))}
-              className="bg-transparent text-center font-display font-light text-white outline-none border-b border-[#c9a84c]/50 focus:border-[#c9a84c] transition-colors"
-              style={{
-                fontSize: `clamp(2.5rem, ${Math.max(4.5, 15 - draft.replace(/ /g, "").length * 0.7)}vw, 9rem)`,
-                lineHeight: 0.95,
-                letterSpacing: "-0.02em",
-                minWidth: "3ch",
-                width: `${Math.max(draft.length, 3)}ch`,
-              }}
+              className="w-full bg-transparent text-center font-display font-light text-white outline-none border-b border-[#c9a84c]/50 focus:border-[#c9a84c] transition-colors"
+              style={{ fontSize: nameFontSize(draft), lineHeight: 1.0, letterSpacing: "-0.02em" }}
               onKeyDown={(e) => { if (e.key === "Escape") { setEditing(false); setDraft(name); } }}
             />
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-[0.7rem] uppercase tracking-[0.3em] transition"
+              className="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-[0.68rem] uppercase tracking-[0.28em] transition"
               style={{ borderColor: "var(--gold)", color: "var(--gold)" }}
             >
-              Search <ArrowRight size={12} />
+              Search <ArrowRight size={11} />
             </button>
           </form>
         ) : (
           <h1
-            className="group relative cursor-pointer font-display text-center font-light text-white"
-            style={{
-              fontSize: `clamp(3rem, ${Math.max(4.5, 15 - name.replace(/ /g, "").length * 0.7)}vw, 9rem)`,
-              lineHeight: 0.95,
-              letterSpacing: "-0.02em",
-            }}
+            className="group relative w-full cursor-pointer text-center font-display font-light text-white"
+            style={{ fontSize: nameFontSize(name), lineHeight: 1.0, letterSpacing: "-0.02em", whiteSpace: "nowrap" }}
             onClick={() => { setDraft(name); setEditing(true); }}
-            title="Click to edit"
+            title="Tap to edit"
           >
             {name.split("").map((ch, i) => (
               <span
                 key={`${ch}-${i}`}
                 className="inline-block opacity-0 animate-rise"
-                style={{ animationDelay: `${i * 60}ms`, color: ch === " " ? "transparent" : undefined }}
+                style={{ animationDelay: `${i * 60}ms` }}
               >
                 {ch === " " ? " " : ch}
               </span>
             ))}
-            <span className="absolute -right-8 top-1/2 -translate-y-1/2 text-white/30 opacity-0 transition group-hover:opacity-100" style={{ fontSize: "1.2rem" }}>✎</span>
+            <span className="ml-2 text-white/25 opacity-0 transition group-hover:opacity-100" style={{ fontSize: "0.9rem" }}>✎</span>
           </h1>
         )}
 
-        {/* thin gold rule */}
-        <div
-          className="mt-8 mb-6 w-12"
-          style={{ height: "1px", background: "var(--gold)", opacity: 0.5 }}
-        />
-
-        {/* coordinate strip */}
-        {locations.length > 0 && (
-          <div
-            className="mb-6 flex w-full max-w-2xl flex-wrap justify-center gap-x-3 gap-y-2 px-2"
-            style={{ fontFamily: "monospace", fontSize: "clamp(0.5rem, 1.5vw, 0.65rem)", letterSpacing: "0.12em", color: "rgba(255,255,255,0.28)" }}
-          >
-            {locations.map((loc, i) => {
-              const hasCoords = loc.lat !== null && loc.lng !== null;
-              const mapsUrl = hasCoords
-                ? `https://www.google.com/maps?q=${loc.lat},${loc.lng}&z=8`
-                : loc.location
-                ? `https://www.google.com/maps/search/${encodeURIComponent(loc.location)}`
-                : null;
-
-              const inner = (
-                <span className="inline-flex items-center gap-1.5 transition-opacity hover:opacity-100" style={{ opacity: mapsUrl ? undefined : 1 }}>
-                  <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--gold)", opacity: 0.7, display: "inline-block", flexShrink: 0 }} />
-                  {hasCoords && (
-                    <span style={{ color: "rgba(201,168,76,0.8)" }}>
-                      {toDMS(loc.lat!, "N", "S")} {toDMS(loc.lng!, "E", "W")}
-                    </span>
-                  )}
-                  {loc.location && (
-                    <span style={{ color: "rgba(255,255,255,0.45)" }}>{loc.location}</span>
-                  )}
-                  {mapsUrl && (
-                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.5, flexShrink: 0 }}>
-                      <path d="M1 9L9 1M9 1H3M9 1V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                  )}
-                </span>
-              );
-
-              return mapsUrl ? (
-                <a
-                  key={i}
-                  href={mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Open in Google Maps"
-                  style={{ color: "inherit", textDecoration: "none", opacity: 0.7 }}
-                  className="transition-opacity hover:opacity-100"
-                >
-                  {inner}
-                </a>
-              ) : (
-                <span key={i}>{inner}</span>
-              );
-            })}
-          </div>
-        )}
+        {/* gold rule */}
+        <div className="mt-6 mb-5 w-10" style={{ height: "1px", background: "var(--gold)", opacity: 0.5 }} />
 
         {error && <p className="mb-4 text-sm" style={{ color: "#f87171" }}>{error}</p>}
 
@@ -430,15 +324,13 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
 
         {/* actions */}
         {results.length > 0 && (
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:mt-8 sm:gap-3">
             <button
-              type="button"
-              onClick={onShuffle}
-              disabled={!canAct}
-              className="group inline-flex h-9 items-center gap-2 rounded-full border border-white/12 px-5 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-              style={{ fontSize: "0.72rem", letterSpacing: "0.25em", textTransform: "uppercase" }}
+              type="button" onClick={onShuffle} disabled={!canAct}
+              className="group inline-flex h-9 items-center gap-2 rounded-full border border-white/12 px-4 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+              style={{ fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase" }}
             >
-              <RotateCcw size={12} className="transition group-hover:-rotate-45" />
+              <RotateCcw size={11} className="transition group-hover:-rotate-45" />
               Shuffle
             </button>
             <DownloadButton targetRef={displayRef} disabled={!canAct} />
@@ -446,14 +338,12 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
           </div>
         )}
 
-        {/* footer */}
-        <p className="mt-14 eyebrow" style={{ color: "rgba(255,255,255,0.18)" }}>
-          NASA · USGS Landsat program
+        <p className="mt-12 eyebrow" style={{ color: "rgba(255,255,255,0.28)" }}>
+          Images credit:{" "}
+          <a href="https://nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.45)", textDecoration: "underline", textUnderlineOffset: "3px" }}>NASA</a>
+          {" "}· USGS Landsat
         </p>
-        <p
-          className="mt-1.5 eyebrow"
-          style={{ color: "rgba(255,255,255,0.18)" }}
-        >
+        <p className="mt-1 eyebrow" style={{ color: "rgba(255,255,255,0.28)" }}>
           Built by{" "}
           <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
         </p>
