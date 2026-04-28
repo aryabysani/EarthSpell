@@ -9,6 +9,16 @@ import { NameInput } from "@/components/NameInput";
 import { ShareButton } from "@/components/ShareButton";
 import type { LetterImage, LetterResult, LettersApiResponse } from "@/types";
 
+function toDMS(deg: number, posDir: string, negDir: string): string {
+  const d = Math.abs(deg);
+  const degrees = Math.floor(d);
+  const minutesFloat = (d - degrees) * 60;
+  const minutes = Math.floor(minutesFloat);
+  const seconds = ((minutesFloat - minutes) * 60).toFixed(1);
+  const dir = deg >= 0 ? posDir : negDir;
+  return `${degrees}°${String(minutes).padStart(2, "0")}'${seconds.padStart(4, "0")}" ${dir}`;
+}
+
 function encodeChars(name: string) {
   return name.split("").map((c) => encodeURIComponent(c)).join(",");
 }
@@ -342,7 +352,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
                   <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--gold)", opacity: 0.7, display: "inline-block", flexShrink: 0 }} />
                   {hasCoords && (
                     <span style={{ color: "rgba(201,168,76,0.8)" }}>
-                      {loc.lat!.toFixed(4)}°{loc.lat! >= 0 ? "N" : "S"} {Math.abs(loc.lng!).toFixed(4)}°{loc.lng! >= 0 ? "E" : "W"}
+                      {toDMS(loc.lat!, "N", "S")} {toDMS(loc.lng!, "E", "W")}
                     </span>
                   )}
                   {loc.location && (

@@ -1,5 +1,15 @@
 import type { LetterImage } from "@/types";
 
+function toDMS(deg: number, posDir: string, negDir: string): string {
+  const d = Math.abs(deg);
+  const degrees = Math.floor(d);
+  const minutesFloat = (d - degrees) * 60;
+  const minutes = Math.floor(minutesFloat);
+  const seconds = ((minutesFloat - minutes) * 60).toFixed(1);
+  const dir = deg >= 0 ? posDir : negDir;
+  return `${degrees}°${String(minutes).padStart(2, "0")}'${seconds.padStart(4, "0")}" ${dir}`;
+}
+
 interface TooltipProps {
   image: LetterImage;
 }
@@ -36,10 +46,8 @@ export function Tooltip({ image }: TooltipProps) {
           style={{ color: "rgba(201,168,76,0.8)", opacity: 0.85, textDecoration: "none" }}
         >
           <span>
-            {Math.abs(lat).toFixed(4)}°{lat >= 0 ? "N" : "S"}&nbsp;
-            {Math.abs(lng).toFixed(4)}°{lng >= 0 ? "E" : "W"}
+            {toDMS(lat, "N", "S")} {toDMS(lng, "E", "W")}
           </span>
-          {/* external link arrow */}
           <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ flexShrink: 0 }}>
             <path d="M1 9L9 1M9 1H3M9 1V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
