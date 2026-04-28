@@ -15,12 +15,12 @@ export const NameDisplay = forwardRef<HTMLDivElement, NameDisplayProps>(function
 ) {
   if (loading) {
     return (
-      <div className="mt-6 flex w-full flex-wrap items-end justify-center gap-4 pb-2">
+      <div className="mt-6 flex w-full flex-wrap items-end justify-center gap-2 pb-2 sm:gap-4">
         {Array.from({ length: 5 }).map((_, index) => (
           <div
             key={index}
-            className="h-44 w-44 shrink-0 animate-shimmer bg-[linear-gradient(110deg,#0a0a0a_8%,#1a1a1a_18%,#0a0a0a_33%)] bg-[length:200%_100%] sm:h-52 sm:w-52"
-            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+            className="animate-shimmer bg-[linear-gradient(110deg,#0a0a0a_8%,#1a1a1a_18%,#0a0a0a_33%)] bg-[length:200%_100%]"
+            style={{ width: "min(11rem,20vw)", height: "min(11rem,20vw)", border: "1px solid rgba(255,255,255,0.07)" }}
           />
         ))}
       </div>
@@ -31,10 +31,13 @@ export const NameDisplay = forwardRef<HTMLDivElement, NameDisplayProps>(function
     return null;
   }
 
+  // Count non-space letters to compute per-card max width
+  const letterCount = results.filter((r) => r.char !== " ").length || 1;
+
   return (
     <div
       ref={ref}
-      className="earthstrip-capture mt-6 flex w-full items-end justify-center gap-4 overflow-x-auto px-2 pb-2"
+      className="earthstrip-capture mt-6 flex w-full flex-wrap items-end justify-center gap-2 px-1 pb-2 sm:gap-4"
     >
       {results.map((result, index) => (
         <LetterCard
@@ -42,6 +45,7 @@ export const NameDisplay = forwardRef<HTMLDivElement, NameDisplayProps>(function
           char={result.char}
           image={result.image}
           index={index}
+          total={letterCount}
         />
       ))}
     </div>

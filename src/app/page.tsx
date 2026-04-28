@@ -95,12 +95,17 @@ export default function Home() {
 
   function reset() { setSubmitted(false); setResults([]); setName(""); }
 
+  function searchName(newName: string) {
+    const v = newName.toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 12).trim();
+    if (v) { setName(v); setSubmitted(true); }
+  }
+
   if (submitted) {
     return (
       <ResultView
         name={name} results={results} loading={loading}
         error={error} canAct={canAct} displayRef={displayRef}
-        onShuffle={shuffle} onReset={reset}
+        onShuffle={shuffle} onReset={reset} onSearch={searchName}
       />
     );
   }
@@ -173,15 +178,15 @@ export default function Home() {
 
         {/* sub-copy */}
         <p
-          className="mt-5 max-w-sm text-center text-white/40"
-          style={{ fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)", lineHeight: 1.7 }}
+          className="mt-4 max-w-xs text-center text-white/40 sm:mt-5 sm:max-w-sm"
+          style={{ fontSize: "clamp(0.72rem, 1.8vw, 0.9rem)", lineHeight: 1.7 }}
         >
           Real Landsat satellite imagery arranged into letters shaped by rivers,
           ridgelines, and coastlines.
         </p>
 
         {/* form */}
-        <form onSubmit={handleSubmit} className="mt-10 w-full max-w-xs sm:max-w-sm">
+        <form onSubmit={handleSubmit} className="mt-8 w-full max-w-[18rem] sm:mt-10 sm:max-w-sm">
           <NameInput value={name} onChange={setName} />
           <div className="mt-3 flex gap-2">
             <button
@@ -245,10 +250,10 @@ export default function Home() {
 interface ResultViewProps {
   name: string; results: LetterResult[]; loading: boolean;
   error: string; canAct: boolean; displayRef: React.RefObject<HTMLDivElement>;
-  onShuffle: () => void; onReset: () => void;
+  onShuffle: () => void; onReset: () => void; onSearch: (name: string) => void;
 }
 
-function ResultView({ name, results, loading, error, canAct, displayRef, onShuffle, onReset }: ResultViewProps) {
+function ResultView({ name, results, loading, error, canAct, displayRef, onShuffle, onReset, onSearch }: ResultViewProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
   const locations = useMemo(
@@ -291,20 +296,20 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
       />
 
       {/* top nav */}
-      <header className="relative z-10 flex items-center justify-between px-6 pt-7 sm:px-10">
+      <header className="relative z-10 flex items-center justify-between px-4 pt-5 sm:px-10 sm:pt-7">
         <button
           type="button"
           onClick={onReset}
           className="group inline-flex items-center gap-2 text-white/40 transition hover:text-white"
-          style={{ fontSize: "0.72rem", letterSpacing: "0.3em", textTransform: "uppercase" }}
+          style={{ fontSize: "0.68rem", letterSpacing: "0.25em", textTransform: "uppercase" }}
         >
-          <ArrowLeft size={13} className="transition group-hover:-translate-x-1" />
+          <ArrowLeft size={12} className="transition group-hover:-translate-x-1" />
           New name
         </button>
 
         <span
           className="eyebrow"
-          style={{ color: "rgba(255,255,255,0.18)" }}
+          style={{ color: "rgba(255,255,255,0.18)", fontSize: "0.6rem" }}
         >
           Built by{" "}
           <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
@@ -312,7 +317,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
       </header>
 
       {/* body */}
-      <section className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-5 pb-16 pt-12 sm:pt-16">
+      <section className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-3 pb-16 pt-8 sm:px-5 sm:pt-16">
 
         {/* "Earth has spelled" eyebrow */}
         <p className="eyebrow mb-4" style={{ color: "rgba(255,255,255,0.28)" }}>
@@ -325,8 +330,12 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
             onSubmit={(e) => {
               e.preventDefault();
               const v = draft.toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 12).trim();
-              setEditing(false);
-              if (v) onReset();
+              if (v && v !== name) {
+                setEditing(false);
+                onSearch(v);
+              } else {
+                setEditing(false);
+              }
             }}
             className="flex flex-col items-center gap-3"
           >
@@ -385,8 +394,8 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
         {/* coordinate strip */}
         {locations.length > 0 && (
           <div
-            className="mb-6 flex max-w-2xl flex-wrap justify-center gap-x-5 gap-y-2"
-            style={{ fontFamily: "monospace", fontSize: "0.65rem", letterSpacing: "0.18em", color: "rgba(255,255,255,0.28)" }}
+            className="mb-6 flex w-full max-w-2xl flex-wrap justify-center gap-x-3 gap-y-2 px-2"
+            style={{ fontFamily: "monospace", fontSize: "clamp(0.5rem, 1.5vw, 0.65rem)", letterSpacing: "0.12em", color: "rgba(255,255,255,0.28)" }}
           >
             {locations.map((loc, i) => {
               const hasCoords = loc.lat !== null && loc.lng !== null;

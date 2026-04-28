@@ -8,6 +8,7 @@ interface LetterCardProps {
   char: string;
   image: LetterImage | null;
   index: number;
+  total: number;
 }
 
 function toDMS(deg: number, posDir: string, negDir: string): string {
@@ -20,12 +21,12 @@ function toDMS(deg: number, posDir: string, negDir: string): string {
   return `${degrees}°${String(minutes).padStart(2, "0")}'${seconds}" ${dir}`;
 }
 
-export function LetterCard({ char, image, index }: LetterCardProps) {
+export function LetterCard({ char, image, index, total }: LetterCardProps) {
   const [loaded, setLoaded] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
   if (char === " ") {
-    return <div aria-label="Space" className="w-8 shrink-0 sm:w-12" />;
+    return <div aria-label="Space" className="w-4 shrink-0 sm:w-8" />;
   }
 
   const hasCoords = typeof image?.lat === "number" && typeof image?.lng === "number";
@@ -35,8 +36,20 @@ export function LetterCard({ char, image, index }: LetterCardProps) {
     ? `https://www.google.com/maps/search/${encodeURIComponent(image.location)}`
     : null;
 
-  const imgSize = expanded ? "w-[min(14rem,38vw)]" : "w-[min(11rem,28vw)]";
-  const photoHeight = expanded ? "h-[min(18rem,48vw)]" : "h-[min(11rem,28vw)]";
+  // Fit all letters in viewport: 96vw shared across `total` cards minus gaps (~8px each)
+  const maxVw = Math.floor(94 / total);
+  const imgSize = expanded
+    ? `w-[min(14rem,${Math.min(maxVw + 10, 42)}vw)]`
+    : `w-[min(11rem,${maxVw}vw)]`;
+  const photoHeight = expanded
+    ? `h-[min(18rem,${Math.min(maxVw + 10, 42)}vw)]`
+    : `h-[min(11rem,${maxVw}vw)]`;
+
+  const nameFontSize = expanded ? "clamp(0.55rem,1.5vw,0.85rem)" : "clamp(0.42rem,1.1vw,0.65rem)";
+  const coordFontSize = expanded ? "clamp(0.48rem,1.3vw,0.78rem)" : "clamp(0.38rem,0.95vw,0.58rem)";
+  const letterFontSize = expanded
+    ? `clamp(1.8rem,${maxVw * 0.55}vw,4rem)`
+    : `clamp(1.3rem,${maxVw * 0.42}vw,3rem)`;
 
   return (
     <article
@@ -50,17 +63,17 @@ export function LetterCard({ char, image, index }: LetterCardProps) {
         style={{ border: "1px solid rgba(255,255,255,0.08)" }}
       >
         {/* gold corner ticks */}
-        <span aria-hidden className="absolute -left-px -top-px z-10 h-3 w-3" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderLeft: "1px solid rgba(201,168,76,0.5)" }} />
-        <span aria-hidden className="absolute -right-px -top-px z-10 h-3 w-3" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderRight: "1px solid rgba(201,168,76,0.5)" }} />
-        <span aria-hidden className="absolute -left-px -bottom-px z-10 h-3 w-3" style={{ borderBottom: "1px solid rgba(201,168,76,0.5)", borderLeft: "1px solid rgba(201,168,76,0.5)" }} />
-        <span aria-hidden className="absolute -right-px -bottom-px z-10 h-3 w-3" style={{ borderBottom: "1px solid rgba(201,168,76,0.5)", borderRight: "1px solid rgba(201,168,76,0.5)" }} />
+        <span aria-hidden className="absolute -left-px -top-px z-10 h-2.5 w-2.5" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderLeft: "1px solid rgba(201,168,76,0.5)" }} />
+        <span aria-hidden className="absolute -right-px -top-px z-10 h-2.5 w-2.5" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderRight: "1px solid rgba(201,168,76,0.5)" }} />
+        <span aria-hidden className="absolute -left-px -bottom-px z-10 h-2.5 w-2.5" style={{ borderBottom: "1px solid rgba(201,168,76,0.5)", borderLeft: "1px solid rgba(201,168,76,0.5)" }} />
+        <span aria-hidden className="absolute -right-px -bottom-px z-10 h-2.5 w-2.5" style={{ borderBottom: "1px solid rgba(201,168,76,0.5)", borderRight: "1px solid rgba(201,168,76,0.5)" }} />
 
         {image?.url ? (
           <Image
             src={image.url}
             alt={image.description || `Landsat image for ${char}`}
             fill
-            sizes="(max-width: 640px) 224px, 288px"
+            sizes="(max-width: 640px) 100px, 176px"
             className={`object-cover transition duration-700 ${expanded ? "scale-105" : "group-hover:scale-105"} ${loaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setLoaded(true)}
           />
@@ -79,18 +92,18 @@ export function LetterCard({ char, image, index }: LetterCardProps) {
           style={{ backgroundImage: "repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 4px)" }}
         />
 
-        {/* index badge top-left */}
-        <div className="absolute left-2.5 top-2 z-10">
-          <span style={{ fontFamily: "monospace", fontSize: "0.6rem", letterSpacing: "0.2em", color: "rgba(201,168,76,0.7)" }}>
+        {/* index badge */}
+        <div className="absolute left-1.5 top-1.5 z-10">
+          <span style={{ fontFamily: "monospace", fontSize: "clamp(0.38rem,0.85vw,0.6rem)", letterSpacing: "0.15em", color: "rgba(201,168,76,0.7)" }}>
             {String(index + 1).padStart(2, "0")}
           </span>
         </div>
 
         {/* letter bottom-left */}
-        <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 via-black/20 to-transparent px-3 py-2">
+        <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 via-black/20 to-transparent px-1.5 py-1 sm:px-3 sm:py-2">
           <span
             className="font-display font-light leading-none text-white transition-all duration-500"
-            style={{ fontSize: expanded ? "4rem" : "3rem" }}
+            style={{ fontSize: letterFontSize }}
           >
             {char}
           </span>
@@ -100,17 +113,13 @@ export function LetterCard({ char, image, index }: LetterCardProps) {
       {/* ── info below photo ── */}
       <div
         className="overflow-hidden transition-all duration-500"
-        style={{
-          maxHeight: expanded ? "120px" : "56px",
-          paddingTop: "10px",
-        }}
+        style={{ maxHeight: expanded ? "120px" : "52px", paddingTop: "6px" }}
       >
-        {/* location name */}
         <p
           className="truncate font-medium text-white transition-all duration-500"
           style={{
-            fontSize: expanded ? "0.85rem" : "0.65rem",
-            letterSpacing: expanded ? "0.05em" : "0.15em",
+            fontSize: nameFontSize,
+            letterSpacing: expanded ? "0.05em" : "0.1em",
             textTransform: "uppercase",
             opacity: 0.8,
           }}
@@ -118,20 +127,19 @@ export function LetterCard({ char, image, index }: LetterCardProps) {
           {image?.location || char}
         </p>
 
-        {/* coordinates */}
         {hasCoords ? (
           <a
             href={mapsUrl ?? undefined}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="mt-1 block font-mono transition-all duration-500 hover:opacity-100"
+            className="mt-0.5 block font-mono transition-all duration-500 hover:opacity-100"
             style={{
-              fontSize: expanded ? "0.78rem" : "0.58rem",
+              fontSize: coordFontSize,
               color: "rgba(201,168,76,0.85)",
               opacity: 0.8,
               textDecoration: "none",
-              letterSpacing: "0.05em",
+              letterSpacing: "0.02em",
             }}
           >
             {toDMS(image!.lat as number, "N", "S")}
@@ -144,8 +152,8 @@ export function LetterCard({ char, image, index }: LetterCardProps) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="mt-1 block font-mono transition-all duration-500 hover:opacity-100"
-            style={{ fontSize: expanded ? "0.72rem" : "0.55rem", color: "rgba(201,168,76,0.6)", textDecoration: "none" }}
+            className="mt-0.5 block font-mono hover:opacity-100"
+            style={{ fontSize: coordFontSize, color: "rgba(201,168,76,0.6)", textDecoration: "none" }}
           >
             Open in Maps ↗
           </a>
