@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import type { LetterImage } from "@/types";
 import { Tooltip } from "./Tooltip";
@@ -33,14 +34,14 @@ export function LetterCard({ char, image, index }: LetterCardProps) {
         style={{ border: "1px solid rgba(255,255,255,0.08)" }}
       >
         {image?.url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={image.url}
             alt={image.description || `Landsat image for ${char}`}
-            className={`h-full w-full object-cover transition duration-700 group-hover:scale-105 ${
+            fill
+            sizes="(max-width: 640px) 176px, 208px"
+            className={`object-cover transition duration-700 group-hover:scale-105 ${
               loaded ? "opacity-100" : "opacity-0"
             }`}
-            crossOrigin="anonymous"
             onLoad={() => setLoaded(true)}
           />
         ) : null}
