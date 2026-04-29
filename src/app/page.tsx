@@ -41,6 +41,7 @@ function nameFontSize(str: string) {
 export default function Home() {
   const [name, setName] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [zooming, setZooming] = useState(false);
   const [results, setResults] = useState<LetterResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -93,7 +94,9 @@ export default function Home() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (name.trim()) setSubmitted(true);
+    if (!name.trim()) return;
+    setZooming(true);
+    window.setTimeout(() => { setZooming(false); setSubmitted(true); }, 900);
   }
 
   function reset() { setSubmitted(false); setResults([]); setName(""); }
@@ -120,27 +123,41 @@ export default function Home() {
       <div aria-hidden className="corner corner--bl" />
       <div aria-hidden className="corner corner--br" />
 
-      {/* background video — brighter, vivid */}
+      {/* background video — zooms into Earth on submit */}
       <video
         aria-hidden autoPlay loop muted playsInline
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-        style={{ opacity: 0.75, filter: "saturate(1.6) brightness(1.1) contrast(1.05)" }}
+        style={{
+          opacity: zooming ? 1 : 0.75,
+          filter: `saturate(${zooming ? 2 : 1.6}) brightness(${zooming ? 1.4 : 1.1}) contrast(1.05)`,
+          transform: zooming ? "scale(2.8)" : "scale(1)",
+          transition: zooming ? "transform 0.9s cubic-bezier(0.4,0,0.2,1), opacity 0.4s, filter 0.5s" : "none",
+          transformOrigin: "center center",
+        }}
       >
         <source src="https://storage.googleapis.com/earthspell-34aed.firebasestorage.app/earth-bg.mp4" type="video/mp4" />
       </video>
 
-      {/* dark overlay so text always readable — heavier in centre where text sits */}
+      {/* dark overlay — fades to black on zoom */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{
-        background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.62) 55%, rgba(0,0,0,0.95) 100%)"
+        background: zooming
+          ? "rgba(0,0,0,0.85)"
+          : "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.62) 55%, rgba(0,0,0,0.95) 100%)",
+        transition: "background 0.7s ease",
       }} />
 
-      {/* gold atmospheric halo around the globe */}
+      {/* gold atmospheric halo */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{
-        background: "radial-gradient(ellipse 55% 55% at 50% 48%, transparent 35%, rgba(201,168,76,0.07) 60%, transparent 75%)"
+        background: "radial-gradient(ellipse 55% 55% at 50% 48%, transparent 35%, rgba(201,168,76,0.07) 60%, transparent 75%)",
+        opacity: zooming ? 0 : 1,
+        transition: "opacity 0.4s",
       }} />
 
-      {/* content */}
-      <section className="relative z-10 flex h-full flex-col items-center justify-center px-5">
+      {/* content — fades out on zoom */}
+      <section
+        className="relative z-10 flex h-full flex-col items-center justify-center px-5"
+        style={{ opacity: zooming ? 0 : 1, transition: "opacity 0.35s ease", pointerEvents: zooming ? "none" : undefined }}
+      >
         <p className="eyebrow mb-6 sm:mb-8" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 8px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1)" }}>
           Landsat · Earth Observatory
         </p>
@@ -189,7 +206,7 @@ export default function Home() {
             {/* Random name button */}
             <button
               type="button"
-              onClick={() => { const n = randomName(); setName(n); setSubmitted(true); }}
+              onClick={() => { const n = randomName(); setName(n); setZooming(true); window.setTimeout(() => { setZooming(false); setSubmitted(true); }, 900); }}
               className="flex items-center justify-center rounded-full border border-white/20 px-4 py-3 text-white/60 transition hover:border-[rgba(201,168,76,0.5)] hover:text-[#c9a84c]"
               style={{ background: "rgba(0,0,0,0.4)" }}
               title="Random name"
@@ -210,7 +227,8 @@ export default function Home() {
       </section>
 
       {/* bottom credit */}
-      <div className="absolute bottom-5 left-0 right-0 z-20 flex flex-col items-center gap-1">
+      <div className="absolute bottom-5 left-0 right-0 z-20 flex flex-col items-center gap-1"
+        style={{ opacity: zooming ? 0 : 1, transition: "opacity 0.3s" }}>
         <p className="eyebrow" style={{ color: "rgba(255,255,255,0.35)" }}>
           Images credit:{" "}
           <a href="https://www.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.65)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>
