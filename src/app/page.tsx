@@ -333,7 +333,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
               <RotateCcw size={11} className="transition group-hover:-rotate-45" />
               Shuffle
             </button>
-            <DownloadButton targetRef={displayRef} disabled={!canAct} />
+            <DownloadButton name={name} results={results} disabled={!canAct} />
             <ShareButton name={name} disabled={!name.trim()} />
           </div>
         )}
