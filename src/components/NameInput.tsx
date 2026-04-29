@@ -35,7 +35,8 @@ export function NameInput({ value, onChange, onRandom }: NameInputProps) {
           type="button"
           onClick={onRandom}
           title="Random name"
-          className="absolute right-0 flex h-8 w-8 items-center justify-center text-white/40 transition hover:text-[#c9a84c]"
+          className="absolute right-0 flex h-8 w-8 items-center justify-center transition hover:text-white"
+          style={{ color: "#c9a84c" }}
         >
           <Dices size={16} aria-hidden />
         </button>

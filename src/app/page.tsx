@@ -300,7 +300,8 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
             type="button"
             onClick={() => onSearch(randomName())}
             title="Random name"
-            className="inline-flex items-center gap-1.5 text-white/30 transition hover:text-[#c9a84c]"
+            className="inline-flex items-center gap-1.5 transition hover:text-white"
+            style={{ color: "#c9a84c" }}
             style={{ fontSize: "clamp(0.55rem, 1.5vw, 0.65rem)", letterSpacing: "0.2em", textTransform: "uppercase" }}
           >
             <Dices size={13} aria-hidden />
