@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Dices, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DownloadButton } from "@/components/DownloadButton";
 import { GlobeClient } from "@/components/GlobeClient";
+import { GlobePinMap } from "@/components/GlobePinMap";
 import { NameDisplay } from "@/components/NameDisplay";
 import { NameInput } from "@/components/NameInput";
 import { ShareButton } from "@/components/ShareButton";
@@ -387,6 +388,39 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
             <ShareButton name={name} disabled={!name.trim()} />
           </div>
         )}
+
+        {/* globe pin map */}
+        {canAct && (() => {
+          const pins = results
+            .filter((r) => r.char !== " " && typeof r.image?.lat === "number" && typeof r.image?.lng === "number")
+            .map((r) => ({ lat: r.image!.lat as number, lng: r.image!.lng as number, char: r.char, location: r.image!.location }));
+          return pins.length > 0 ? (
+            <div className="mt-8 sm:mt-12 w-full flex flex-col items-center">
+              <p style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.6rem)", fontWeight: 500, letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: "0.75rem" }}>
+                Where on Earth
+              </p>
+              <div
+                style={{
+                  width: "min(90vw, 320px)",
+                  height: "min(90vw, 320px)",
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  boxShadow: "0 0 60px rgba(201,168,76,0.12), 0 0 120px rgba(201,168,76,0.06)",
+                }}
+              >
+                <GlobePinMap pins={pins} />
+              </div>
+              <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-1">
+                {pins.map((p, i) => (
+                  <span key={i} style={{ fontSize: "clamp(0.48rem, 1.3vw, 0.58rem)", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
+                    <span style={{ color: "var(--gold)", marginRight: "0.3em" }}>{p.char}</span>
+                    {p.location || `${p.lat.toFixed(1)}° ${p.lng.toFixed(1)}°`}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null;
+        })()}
 
         {/* footer */}
         <p className="mt-10 sm:mt-12" style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.62rem)", fontWeight: 500, letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)" }}>
