@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { X } from "lucide-react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import type { LetterImage } from "@/types";
 
 interface LetterCardProps {
@@ -24,6 +26,7 @@ function toDMS(deg: number, posDir: string, negDir: string): string {
 export function LetterCard({ char, image, index, total }: LetterCardProps) {
   const [loaded, setLoaded] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [lightbox, setLightbox] = useState(false);
 
   if (char === " ") {
     return <div aria-label="Space" className="w-4 shrink-0 sm:w-8" />;
@@ -67,7 +70,7 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
       onClick={() => setExpanded((e) => !e)}
     >
       {/* ── photo ── */}
-      <div style={photoStyle}>
+      <div style={photoStyle} onClick={(e) => { if (image?.url) { e.stopPropagation(); setLightbox(true); } }}>
         {/* gold corner ticks */}
         <span aria-hidden className="absolute -left-px -top-px z-10 h-2.5 w-2.5" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderLeft: "1px solid rgba(201,168,76,0.5)" }} />
         <span aria-hidden className="absolute -right-px -top-px z-10 h-2.5 w-2.5" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderRight: "1px solid rgba(201,168,76,0.5)" }} />
@@ -167,6 +170,47 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
           </a>
         ) : null}
       </div>
+      {lightbox && image?.url && createPortal(
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(8px)" }}
+          onClick={() => setLightbox(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(false)}
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/60 transition hover:border-white/50 hover:text-white"
+          >
+            <X size={16} />
+          </button>
+          <div
+            className="relative"
+            style={{ maxWidth: "min(92vw, 900px)", maxHeight: "85vh" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={image.url}
+              alt={image.description || `Landsat image for ${char}`}
+              style={{ maxWidth: "100%", maxHeight: "85vh", objectFit: "contain", display: "block" }}
+            />
+            <div className="mt-2 flex items-start justify-between gap-4">
+              <div>
+                <p style={{ fontSize: "0.7rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>
+                  {image.location || char}
+                </p>
+                {hasCoords && (
+                  <p style={{ fontSize: "0.65rem", fontFamily: "monospace", color: "rgba(201,168,76,0.8)", marginTop: "0.2rem" }}>
+                    {toDMS(image.lat as number, "N", "S")} · {toDMS(image.lng as number, "E", "W")}
+                  </p>
+                )}
+              </div>
+              <span className="font-display text-5xl font-light text-white/20">{char}</span>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </article>
   );
 }
