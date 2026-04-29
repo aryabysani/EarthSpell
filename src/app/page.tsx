@@ -301,8 +301,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
             onClick={() => onSearch(randomName())}
             title="Random name"
             className="inline-flex items-center gap-1.5 transition hover:text-white"
-            style={{ color: "#c9a84c" }}
-            style={{ fontSize: "clamp(0.55rem, 1.5vw, 0.65rem)", letterSpacing: "0.2em", textTransform: "uppercase" }}
+            style={{ color: "#c9a84c", fontSize: "clamp(0.55rem, 1.5vw, 0.65rem)", letterSpacing: "0.2em", textTransform: "uppercase" }}
           >
             <Dices size={13} aria-hidden />
             <span className="hidden sm:inline">Random</span>
