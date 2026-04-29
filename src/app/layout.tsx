@@ -14,13 +14,20 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: "EarthSpell",
-  description: "Spell your name with Landsat images of Earth.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://earthspell.vercel.app"),
+  title: "EarthSpell — Your name written in Earth",
+  description: "Spell your name with 100% real NASA Landsat satellite images. Every letter is a real place on Earth.",
   openGraph: {
-    title: "EarthSpell",
-    description: "Spell your name with Landsat images of Earth.",
-    images: ["/og-image.png"],
+    title: "EarthSpell — Your name written in Earth",
+    description: "Spell your name with 100% real NASA Landsat satellite images. Every letter is a real place on Earth.",
+    images: [{ url: "/api/og?name=EARTH", width: 1200, height: 630 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EarthSpell — Your name written in Earth",
+    description: "Spell your name with 100% real NASA Landsat satellite images.",
+    images: ["/api/og?name=EARTH"],
   },
 };
 

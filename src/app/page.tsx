@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Dices, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DownloadButton } from "@/components/DownloadButton";
 import { GlobeClient } from "@/components/GlobeClient";
@@ -23,6 +23,12 @@ function pickDifferentVariant(variants: LetterImage[], used: Set<string>, curren
   const img = pool[Math.floor(Math.random() * pool.length)] ?? null;
   if (img?.filename) used.add(img.filename);
   return img;
+}
+
+const RANDOM_NAMES = ["BUNTY","DOLLY","DHURANDHAR","KHAMENEI","CHOTABHEEM","SHINCHAN","VIGNESH"];
+
+function randomName() {
+  return RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)];
 }
 
 // Font size that keeps the name on one line: 88vw shared across all chars
@@ -180,10 +186,20 @@ export default function Home() {
             >
               Enter <ArrowRight size={12} aria-hidden />
             </button>
+            {/* Random name button */}
+            <button
+              type="button"
+              onClick={() => { const n = randomName(); setName(n); setSubmitted(true); }}
+              className="flex items-center justify-center rounded-full border border-white/20 px-4 py-3 text-white/60 transition hover:border-[rgba(201,168,76,0.5)] hover:text-[#c9a84c]"
+              style={{ background: "rgba(0,0,0,0.4)" }}
+              title="Random name"
+            >
+              <Dices size={14} aria-hidden />
+            </button>
             {name.trim() && (
               <button
                 type="button" onClick={() => setName("")}
-                className="flex items-center justify-center rounded-full border border-white/20 px-4 py-3 text-[0.7rem] text-white/60 transition hover:border-white/40 hover:text-white/90"
+                className="flex items-center justify-center rounded-full border border-white/20 px-3 py-3 text-[0.7rem] text-white/60 transition hover:border-white/40 hover:text-white/90"
                 style={{ background: "rgba(0,0,0,0.4)" }}
               >
                 ✕
