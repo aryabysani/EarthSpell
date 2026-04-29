@@ -164,7 +164,7 @@ export default function Home() {
             textShadow: "0 1px 4px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1)",
           }}
         >
-          Real Landsat satellite imagery arranged into letters shaped by rivers, ridgelines, and coastlines.
+          100% real NASA Landsat satellite images — not AI generated. Every letter is a real place on Earth, with exact coordinates and location names.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 w-full max-w-[17rem] sm:mt-10 sm:max-w-sm">

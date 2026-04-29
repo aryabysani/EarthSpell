@@ -17,11 +17,40 @@ export function DownloadButton({ targetRef, disabled }: DownloadButtonProps) {
     setBusy(true);
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(targetRef.current, {
+
+      // Build a single-row clone so the download is always one horizontal strip
+      const clone = targetRef.current.cloneNode(true) as HTMLElement;
+      clone.style.cssText = [
+        "position:fixed",
+        "top:-9999px",
+        "left:-9999px",
+        "display:flex",
+        "flex-wrap:nowrap",       // force single row
+        "align-items:flex-end",
+        "gap:8px",
+        "padding:16px",
+        "background:#000",
+        "width:max-content",
+        "max-width:none",
+        "overflow:visible",
+        "opacity:1",
+      ].join(";");
+
+      // Make all child cards visible (they start opacity-0 from animate-rise)
+      clone.querySelectorAll("article").forEach((el) => {
+        (el as HTMLElement).style.opacity = "1";
+      });
+
+      document.body.appendChild(clone);
+
+      const dataUrl = await toPng(clone, {
         backgroundColor: "#000000",
-        pixelRatio: window.devicePixelRatio || 2,
+        pixelRatio: 2,
         skipFonts: false,
       });
+
+      document.body.removeChild(clone);
+
       const link = document.createElement("a");
       link.download = "myname-in-landsat.png";
       link.href = dataUrl;
