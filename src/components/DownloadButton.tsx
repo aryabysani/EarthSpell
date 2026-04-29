@@ -115,8 +115,8 @@ export function DownloadButton({ name, results, disabled }: DownloadButtonProps)
       });
 
       // Watermark
-      ctx.fillStyle = "rgba(255,255,255,0.18)";
-      ctx.font = "400 13px monospace";
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = "700 13px monospace";
       ctx.textAlign = "right";
       ctx.fillText("earthspell.vercel.app", W - PAD, H - 8);
 
@@ -143,8 +143,8 @@ export function DownloadButton({ name, results, disabled }: DownloadButtonProps)
       type="button"
       onClick={handleDownload}
       disabled={disabled || busy}
-      className="inline-flex h-9 items-center gap-2 rounded-full border border-white/12 px-4 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-      style={{ fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase" }}
+      className="inline-flex h-8 items-center gap-1.5 rounded-full border border-white/12 px-3 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:px-4"
+      style={{ fontSize: "clamp(0.58rem, 1.6vw, 0.68rem)", letterSpacing: "0.2em", textTransform: "uppercase" }}
       title="Download as PNG"
     >
       <Download size={11} aria-hidden="true" />

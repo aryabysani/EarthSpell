@@ -26,16 +26,15 @@ function pickDifferentVariant(variants: LetterImage[], used: Set<string>, curren
 }
 
 const RANDOM_NAMES = ["BUNTY","DOLLY","DHURANDHAR","KHAMENEI","CHOTABHEEM","SHINCHAN","VIGNESH"];
-
 function randomName() {
   return RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)];
 }
 
-// Font size that keeps the name on one line: 88vw shared across all chars
+// Scales name heading to always fit one line
 function nameFontSize(str: string) {
   const chars = Math.max(str.trim().length, 1);
   const vw = Math.min(88 / chars, 10);
-  return `clamp(1.6rem, ${vw}vw, 7rem)`;
+  return `clamp(1.4rem, ${vw}vw, 7rem)`;
 }
 
 export default function Home() {
@@ -92,11 +91,15 @@ export default function Home() {
     });
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
+  function doZoomThen(n: string) {
+    setName(n);
     setZooming(true);
     window.setTimeout(() => { setZooming(false); setSubmitted(true); }, 900);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (name.trim()) doZoomThen(name);
   }
 
   function reset() { setSubmitted(false); setResults([]); setName(""); }
@@ -123,7 +126,7 @@ export default function Home() {
       <div aria-hidden className="corner corner--bl" />
       <div aria-hidden className="corner corner--br" />
 
-      {/* background video — zooms into Earth on submit */}
+      {/* background video */}
       <video
         aria-hidden autoPlay loop muted playsInline
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
@@ -138,37 +141,44 @@ export default function Home() {
         <source src="https://storage.googleapis.com/earthspell-34aed.firebasestorage.app/earth-bg.mp4" type="video/mp4" />
       </video>
 
-      {/* dark overlay — fades to black on zoom */}
+      {/* overlay */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{
         background: zooming
           ? "rgba(0,0,0,0.85)"
           : "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.62) 55%, rgba(0,0,0,0.95) 100%)",
         transition: "background 0.7s ease",
       }} />
-
-      {/* gold atmospheric halo */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{
         background: "radial-gradient(ellipse 55% 55% at 50% 48%, transparent 35%, rgba(201,168,76,0.07) 60%, transparent 75%)",
-        opacity: zooming ? 0 : 1,
-        transition: "opacity 0.4s",
+        opacity: zooming ? 0 : 1, transition: "opacity 0.4s",
       }} />
 
-      {/* content — fades out on zoom */}
+      {/* ── Landing content ── */}
       <section
-        className="relative z-10 flex h-full flex-col items-center justify-center px-5"
+        className="relative z-10 flex h-full flex-col items-center justify-center px-4 sm:px-6"
         style={{ opacity: zooming ? 0 : 1, transition: "opacity 0.35s ease", pointerEvents: zooming ? "none" : undefined }}
       >
-        <p className="eyebrow mb-6 sm:mb-8" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 8px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1)" }}>
+        {/* eyebrow */}
+        <p style={{
+          fontSize: "clamp(0.55rem, 1.8vw, 0.65rem)",
+          fontWeight: 500,
+          letterSpacing: "0.4em",
+          textTransform: "uppercase",
+          color: "rgba(255,255,255,0.85)",
+          textShadow: "0 1px 8px rgba(0,0,0,1)",
+          marginBottom: "clamp(1rem, 3vw, 2rem)",
+        }}>
           Landsat · Earth Observatory
         </p>
 
+        {/* headline */}
         <h1
           className="font-display text-center font-light text-white"
           style={{
-            fontSize: "clamp(2.4rem, 6.5vw, 5.5rem)",
+            fontSize: "clamp(2rem, 8vw, 5.5rem)",
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
-            textShadow: "0 0 40px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,1), 0 4px 32px rgba(0,0,0,0.9)",
+            textShadow: "0 0 40px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,1)",
           }}
         >
           Your name,
@@ -178,46 +188,43 @@ export default function Home() {
           </em>
         </h1>
 
+        {/* sub-copy */}
         <p
-          className="mt-5 max-w-xs text-center sm:max-w-sm"
+          className="mt-4 text-center"
           style={{
-            fontSize: "clamp(0.72rem, 1.8vw, 0.88rem)",
-            lineHeight: 1.7,
-            color: "rgba(255,255,255,0.9)",
+            fontSize: "clamp(0.7rem, 2.2vw, 0.88rem)",
+            lineHeight: 1.65,
+            color: "rgba(255,255,255,0.85)",
             textShadow: "0 1px 4px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1)",
+            maxWidth: "min(90vw, 26rem)",
           }}
         >
           100% real NASA Landsat satellite images — not AI generated. Every letter is a real place on Earth, with exact coordinates and location names.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 w-full max-w-[17rem] sm:mt-10 sm:max-w-sm">
-          <NameInput value={name} onChange={setName} />
+        {/* form */}
+        <form onSubmit={handleSubmit} style={{ marginTop: "clamp(1.5rem, 4vw, 2.5rem)", width: "min(90vw, 22rem)" }}>
+          <NameInput
+            value={name}
+            onChange={setName}
+            onRandom={() => doZoomThen(randomName())}
+          />
           <div className="mt-3 flex gap-2">
             <button
               type="submit"
               disabled={!name.trim()}
-              className="flex flex-1 items-center justify-center gap-2 rounded-full border py-3 text-[0.7rem] font-medium uppercase tracking-[0.28em] transition disabled:cursor-not-allowed disabled:opacity-25"
-              style={{ borderColor: "var(--gold)", color: "var(--gold)", background: "rgba(0,0,0,0.4)" }}
+              className="flex flex-1 items-center justify-center gap-2 rounded-full border py-3 font-medium uppercase transition disabled:cursor-not-allowed disabled:opacity-25"
+              style={{ borderColor: "var(--gold)", color: "var(--gold)", background: "rgba(0,0,0,0.4)", fontSize: "clamp(0.62rem, 1.8vw, 0.72rem)", letterSpacing: "0.25em" }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gold)"; e.currentTarget.style.color = "#000"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.4)"; e.currentTarget.style.color = "var(--gold)"; }}
             >
               Enter <ArrowRight size={12} aria-hidden />
             </button>
-            {/* Random name button */}
-            <button
-              type="button"
-              onClick={() => { const n = randomName(); setName(n); setZooming(true); window.setTimeout(() => { setZooming(false); setSubmitted(true); }, 900); }}
-              className="flex items-center justify-center rounded-full border border-white/20 px-4 py-3 text-white/60 transition hover:border-[rgba(201,168,76,0.5)] hover:text-[#c9a84c]"
-              style={{ background: "rgba(0,0,0,0.4)" }}
-              title="Random name"
-            >
-              <Dices size={14} aria-hidden />
-            </button>
             {name.trim() && (
               <button
                 type="button" onClick={() => setName("")}
-                className="flex items-center justify-center rounded-full border border-white/20 px-3 py-3 text-[0.7rem] text-white/60 transition hover:border-white/40 hover:text-white/90"
-                style={{ background: "rgba(0,0,0,0.4)" }}
+                className="flex items-center justify-center rounded-full border border-white/20 px-3 py-3 text-white/60 transition hover:border-white/40 hover:text-white/90"
+                style={{ background: "rgba(0,0,0,0.4)", fontSize: "clamp(0.62rem, 1.8vw, 0.72rem)" }}
               >
                 ✕
               </button>
@@ -227,20 +234,18 @@ export default function Home() {
       </section>
 
       {/* bottom credit */}
-      <div className="absolute bottom-5 left-0 right-0 z-20 flex flex-col items-center gap-1"
-        style={{ opacity: zooming ? 0 : 1, transition: "opacity 0.3s" }}>
-        <p className="eyebrow" style={{ color: "rgba(255,255,255,0.35)" }}>
+      <div
+        className="absolute bottom-4 left-0 right-0 z-20 flex flex-col items-center gap-1"
+        style={{ opacity: zooming ? 0 : 1, transition: "opacity 0.3s" }}
+      >
+        <p style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.62rem)", fontWeight: 500, letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
           Images credit:{" "}
-          <a href="https://www.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.65)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>
-            NASA
-          </a>
+          <a href="https://www.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>NASA</a>
           {" "}· USGS Landsat
         </p>
-        <p className="eyebrow" style={{ color: "rgba(255,255,255,0.35)" }}>
+        <p style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.62rem)", fontWeight: 500, letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
           Built by{" "}
-          <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>
-            arya
-          </a>
+          <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
         </p>
       </div>
     </main>
@@ -266,7 +271,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
       <div aria-hidden className="corner corner--bl" />
       <div aria-hidden className="corner corner--br" />
 
-      {/* ghost globe top-right, hidden on small screens */}
+      {/* ghost globe — desktop only */}
       <div
         aria-hidden
         className="pointer-events-none absolute -right-[15vmin] -top-[15vmin] hidden opacity-25 sm:block"
@@ -274,34 +279,48 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
       >
         <GlobeClient />
       </div>
-      <div
-        aria-hidden className="pointer-events-none absolute inset-0 hidden sm:block"
-        style={{ background: "radial-gradient(ellipse 60% 55% at 88% -5%, transparent 20%, rgba(0,0,0,0.88) 60%, #000 85%)" }}
-      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hidden sm:block" style={{
+        background: "radial-gradient(ellipse 60% 55% at 88% -5%, transparent 20%, rgba(0,0,0,0.88) 60%, #000 85%)"
+      }} />
 
-      {/* top nav */}
-      <header className="relative z-10 flex items-center justify-between px-4 pt-5 sm:px-8 sm:pt-7">
+      {/* ── top nav ── */}
+      <header className="relative z-10 flex items-center justify-between px-4 pt-4 sm:px-8 sm:pt-6">
         <button
           type="button" onClick={onReset}
-          className="group inline-flex items-center gap-2 text-white/40 transition hover:text-white"
-          style={{ fontSize: "0.65rem", letterSpacing: "0.25em", textTransform: "uppercase" }}
+          className="group inline-flex items-center gap-1.5 text-white/40 transition hover:text-white"
+          style={{ fontSize: "clamp(0.58rem, 1.6vw, 0.68rem)", letterSpacing: "0.22em", textTransform: "uppercase" }}
         >
           <ArrowLeft size={11} className="transition group-hover:-translate-x-1" />
           New name
         </button>
-        <span className="eyebrow" style={{ color: "rgba(255,255,255,0.18)", fontSize: "0.58rem" }}>
-          Built by{" "}
-          <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
-        </span>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onSearch(randomName())}
+            title="Random name"
+            className="inline-flex items-center gap-1.5 text-white/30 transition hover:text-[#c9a84c]"
+            style={{ fontSize: "clamp(0.55rem, 1.5vw, 0.65rem)", letterSpacing: "0.2em", textTransform: "uppercase" }}
+          >
+            <Dices size={13} aria-hidden />
+            <span className="hidden sm:inline">Random</span>
+          </button>
+          <span style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.6rem)", fontWeight: 500, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.18)" }}>
+            Built by{" "}
+            <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
+          </span>
+        </div>
       </header>
 
-      {/* body */}
-      <section className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-3 pb-14 pt-6 sm:px-5 sm:pt-14">
-        <p className="eyebrow mb-3" style={{ color: "rgba(255,255,255,0.28)", fontSize: "0.6rem" }}>
+      {/* ── body ── */}
+      <section className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-3 pb-12 pt-4 sm:px-5 sm:pt-10">
+
+        {/* eyebrow */}
+        <p style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.6rem)", fontWeight: 500, letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: "0.6rem" }}>
           The Earth has spelled
         </p>
 
-        {/* name — single line, tap to edit */}
+        {/* name heading */}
         {editing ? (
           <form
             onSubmit={(e) => {
@@ -322,8 +341,8 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
             />
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-[0.68rem] uppercase tracking-[0.28em] transition"
-              style={{ borderColor: "var(--gold)", color: "var(--gold)" }}
+              className="inline-flex items-center gap-2 rounded-full border px-4 py-2 uppercase transition"
+              style={{ borderColor: "var(--gold)", color: "var(--gold)", fontSize: "clamp(0.6rem, 1.6vw, 0.68rem)", letterSpacing: "0.25em" }}
             >
               Search <ArrowRight size={11} />
             </button>
@@ -336,35 +355,32 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
             title="Tap to edit"
           >
             {name.split("").map((ch, i) => (
-              <span
-                key={`${ch}-${i}`}
-                className="inline-block opacity-0 animate-rise"
-                style={{ animationDelay: `${i * 60}ms` }}
-              >
+              <span key={`${ch}-${i}`} className="inline-block opacity-0 animate-rise" style={{ animationDelay: `${i * 60}ms` }}>
                 {ch === " " ? " " : ch}
               </span>
             ))}
-            <span className="ml-2 text-white/25 opacity-0 transition group-hover:opacity-100" style={{ fontSize: "0.9rem" }}>✎</span>
+            <span className="ml-1 text-white/25 opacity-0 transition group-hover:opacity-100 text-[0.8rem]">✎</span>
           </h1>
         )}
 
         {/* gold rule */}
-        <div className="mt-6 mb-5 w-10" style={{ height: "1px", background: "var(--gold)", opacity: 0.5 }} />
+        <div className="mt-4 mb-4 w-8 sm:mt-6 sm:mb-5 sm:w-10" style={{ height: "1px", background: "var(--gold)", opacity: 0.5 }} />
 
-        {error && <p className="mb-4 text-sm" style={{ color: "#f87171" }}>{error}</p>}
+        {error && <p className="mb-3 text-xs sm:text-sm" style={{ color: "#f87171" }}>{error}</p>}
 
-        {/* letter strip */}
+        {/* letter cards */}
         <NameDisplay ref={displayRef} results={results} loading={loading} />
 
-        {/* actions */}
+        {/* action buttons */}
         {results.length > 0 && (
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:mt-8 sm:gap-3">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 sm:mt-8">
             <button
               type="button" onClick={onShuffle} disabled={!canAct}
-              className="group inline-flex h-9 items-center gap-2 rounded-full border border-white/12 px-4 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-              style={{ fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase" }}
+              className="group inline-flex h-8 items-center gap-1.5 rounded-full border border-white/12 px-3 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:px-4"
+              style={{ fontSize: "clamp(0.58rem, 1.6vw, 0.68rem)", letterSpacing: "0.2em", textTransform: "uppercase" }}
             >
-              <RotateCcw size={11} className="transition group-hover:-rotate-45" />
+              <RotateCcw size={10} className="transition group-hover:-rotate-45 sm:hidden" />
+              <RotateCcw size={11} className="transition group-hover:-rotate-45 hidden sm:block" />
               Shuffle
             </button>
             <DownloadButton name={name} results={results} disabled={!canAct} />
@@ -372,12 +388,13 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
           </div>
         )}
 
-        <p className="mt-12 eyebrow" style={{ color: "rgba(255,255,255,0.28)" }}>
+        {/* footer */}
+        <p className="mt-10 sm:mt-12" style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.62rem)", fontWeight: 500, letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)" }}>
           Images credit:{" "}
           <a href="https://www.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.5)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>NASA</a>
           {" "}· USGS Landsat
         </p>
-        <p className="mt-1 eyebrow" style={{ color: "rgba(255,255,255,0.28)" }}>
+        <p className="mt-1" style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.62rem)", fontWeight: 500, letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)" }}>
           Built by{" "}
           <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
         </p>
