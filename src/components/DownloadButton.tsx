@@ -9,6 +9,18 @@ interface DownloadButtonProps {
   disabled?: boolean;
 }
 
+async function urlToDataURL(src: string): Promise<string> {
+  // Proxy through Next.js image optimizer so we get same-origin response
+  const optimized = `/_next/image?url=${encodeURIComponent(src)}&w=256&q=90`;
+  const res = await fetch(optimized);
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+}
+
 export function DownloadButton({ targetRef, disabled }: DownloadButtonProps) {
   const [busy, setBusy] = useState(false);
 
@@ -16,16 +28,30 @@ export function DownloadButton({ targetRef, disabled }: DownloadButtonProps) {
     if (!targetRef.current || busy) return;
     setBusy(true);
     try {
+      // Collect all <img> elements in the card strip
+      const imgs = Array.from(
+        targetRef.current.querySelectorAll<HTMLImageElement>("img")
+      );
+
+      // Pre-fetch every image as a data URL so the canvas can draw them
+      const dataUrls = await Promise.all(
+        imgs.map((img) => {
+          const src = img.src || img.getAttribute("src") || "";
+          return src ? urlToDataURL(src) : Promise.resolve("");
+        })
+      );
+
+      // Swap src on cloned imgs → done inside toPng filter
       const { toPng } = await import("html-to-image");
 
-      // Build a single-row clone so the download is always one horizontal strip
+      // Clone into an off-screen single-row strip
       const clone = targetRef.current.cloneNode(true) as HTMLElement;
       clone.style.cssText = [
         "position:fixed",
         "top:-9999px",
         "left:-9999px",
         "display:flex",
-        "flex-wrap:nowrap",       // force single row
+        "flex-wrap:nowrap",
         "align-items:flex-end",
         "gap:8px",
         "padding:16px",
@@ -33,12 +59,19 @@ export function DownloadButton({ targetRef, disabled }: DownloadButtonProps) {
         "width:max-content",
         "max-width:none",
         "overflow:visible",
-        "opacity:1",
       ].join(";");
 
-      // Make all child cards visible (they start opacity-0 from animate-rise)
-      clone.querySelectorAll("article").forEach((el) => {
-        (el as HTMLElement).style.opacity = "1";
+      // Force articles visible and swap image srcs to data URLs
+      const articles = clone.querySelectorAll<HTMLElement>("article");
+      articles.forEach((el) => { el.style.opacity = "1"; });
+
+      const cloneImgs = clone.querySelectorAll<HTMLImageElement>("img");
+      cloneImgs.forEach((img, i) => {
+        if (dataUrls[i]) {
+          img.src = dataUrls[i];
+          img.removeAttribute("srcset");
+          img.style.opacity = "1";
+        }
       });
 
       document.body.appendChild(clone);
