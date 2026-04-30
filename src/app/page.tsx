@@ -92,8 +92,12 @@ export default function Home() {
     });
   }
 
-  function doZoomThen(n: string) {
+  async function doZoomThen(n: string) {
     setName(n);
+    setError("");
+    // Check banned before zooming
+    const res = await fetch(`/api/letters?chars=${encodeChars(n)}`);
+    if (res.status === 403) { setError("This word is banned gang 🚫"); return; }
     setZooming(true);
     window.setTimeout(() => { setZooming(false); setSubmitted(true); }, 900);
   }
@@ -223,7 +227,7 @@ export default function Home() {
             </button>
             {name.trim() && (
               <button
-                type="button" onClick={() => setName("")}
+                type="button" onClick={() => { setName(""); setError(""); }}
                 className="flex items-center justify-center rounded-full border border-white/20 px-3 py-3 text-white/60 transition hover:border-white/40 hover:text-white/90"
                 style={{ background: "rgba(0,0,0,0.4)", fontSize: "clamp(0.62rem, 1.8vw, 0.72rem)" }}
               >
@@ -231,6 +235,11 @@ export default function Home() {
               </button>
             )}
           </div>
+          {error && (
+            <p style={{ marginTop: "0.75rem", textAlign: "center", fontSize: "clamp(0.65rem, 1.8vw, 0.75rem)", letterSpacing: "0.15em", color: "#f87171", textShadow: "0 0 20px rgba(248,113,113,0.4)" }}>
+              {error}
+            </p>
+          )}
         </form>
       </section>
 
