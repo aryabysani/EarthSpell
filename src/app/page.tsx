@@ -66,6 +66,7 @@ export default function Home() {
       setLoading(true); setError("");
       try {
         const res = await fetch(`/api/letters?chars=${encodeChars(name)}`, { signal: ctrl.signal });
+        if (res.status === 403) { setError("This word is banned gang"); setLoading(false); return; }
         if (!res.ok) throw new Error();
         const data = (await res.json()) as LettersApiResponse;
         setResults(data.results);
