@@ -11,6 +11,8 @@ interface LetterCardProps {
   image: LetterImage | null;
   index: number;
   total: number;
+  flipping?: boolean;
+  onLoad?: () => void;
 }
 
 function toDMS(deg: number, posDir: string, negDir: string): string {
@@ -23,7 +25,7 @@ function toDMS(deg: number, posDir: string, negDir: string): string {
   return `${degrees}°${String(minutes).padStart(2, "0")}'${seconds}" ${dir}`;
 }
 
-export function LetterCard({ char, image, index, total }: LetterCardProps) {
+export function LetterCard({ char, image, index, total, flipping, onLoad }: LetterCardProps) {
   const [loaded, setLoaded] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [lightbox, setLightbox] = useState(false);
@@ -63,6 +65,12 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
   const nameFontSize = expanded ? "clamp(0.55rem,1.5vw,0.85rem)" : "clamp(0.42rem,1.1vw,0.65rem)";
   const coordFontSize = expanded ? "clamp(0.48rem,1.3vw,0.78rem)" : "clamp(0.38rem,0.95vw,0.58rem)";
 
+  // Flip animation: stagger each card, face-down for 300ms then reveal
+  const flipDelay = index * 60;
+  const flipStyle: React.CSSProperties = flipping ? {
+    animation: `cardFlip 0.55s ease ${flipDelay}ms both`,
+  } : {};
+
   return (
     <article
       className="group relative animate-rise opacity-0 cursor-pointer select-none"
@@ -70,7 +78,7 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
       onClick={() => setExpanded((e) => !e)}
     >
       {/* ── photo ── */}
-      <div style={photoStyle} onClick={(e) => { if (image?.url) { e.stopPropagation(); setLightbox(true); } }}>
+      <div style={{ ...photoStyle, ...flipStyle }} onClick={(e) => { if (image?.url) { e.stopPropagation(); setLightbox(true); } }}>
         {/* gold corner ticks */}
         <span aria-hidden className="absolute -left-px -top-px z-10 h-2.5 w-2.5" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderLeft: "1px solid rgba(201,168,76,0.5)" }} />
         <span aria-hidden className="absolute -right-px -top-px z-10 h-2.5 w-2.5" style={{ borderTop: "1px solid rgba(201,168,76,0.5)", borderRight: "1px solid rgba(201,168,76,0.5)" }} />
@@ -84,7 +92,7 @@ export function LetterCard({ char, image, index, total }: LetterCardProps) {
             fill
             sizes="(max-width: 640px) 15vw, 176px"
             className={`object-cover transition duration-700 ${expanded ? "scale-105" : "group-hover:scale-105"} ${loaded ? "opacity-100" : "opacity-0"}`}
-            onLoad={() => setLoaded(true)}
+            onLoad={() => { setLoaded(true); onLoad?.(); }}
           />
         ) : null}
 

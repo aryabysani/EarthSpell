@@ -147,3 +147,11 @@ button, input { font: inherit; }
 
 /* ── capture background ── */
 .earthstrip-capture { background: #000; }
+
+/* ── card flip (shuffle) ── */
+@keyframes cardFlip {
+  0%   { transform: rotateY(0deg);   filter: brightness(1); }
+  35%  { transform: rotateY(90deg);  filter: brightness(0.2); }
+  65%  { transform: rotateY(-90deg); filter: brightness(0.2); }
+  100% { transform: rotateY(0deg);   filter: brightness(1); }
+}

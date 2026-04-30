@@ -44,6 +44,7 @@ export default function Home() {
   const [results, setResults] = useState<LetterResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [flipping, setFlipping] = useState(false);
   const displayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,15 +82,22 @@ export default function Home() {
   const canAct = useMemo(() => results.some((r) => r.image), [results]);
 
   function shuffle() {
-    setResults((cur) => {
-      const map = new Map<string, Set<string>>();
-      return cur.map((r) => {
-        if (r.char === " " || !r.variants?.length) return r;
-        const used = map.get(r.char) ?? new Set<string>();
-        map.set(r.char, used);
-        return { ...r, image: pickDifferentVariant(r.variants, used, r.image) };
+    setFlipping(true);
+    // Swap images mid-flip (at 35% = ~200ms into 550ms animation)
+    window.setTimeout(() => {
+      setResults((cur) => {
+        const map = new Map<string, Set<string>>();
+        return cur.map((r) => {
+          if (r.char === " " || !r.variants?.length) return r;
+          const used = map.get(r.char) ?? new Set<string>();
+          map.set(r.char, used);
+          return { ...r, image: pickDifferentVariant(r.variants, used, r.image) };
+        });
       });
-    });
+    }, 200);
+    // Clear flipping after all cards finish (longest stagger + animation)
+    const maxCards = results.filter((r) => r.char !== " ").length;
+    window.setTimeout(() => setFlipping(false), 200 + maxCards * 60 + 550);
   }
 
   async function doZoomThen(n: string) {
@@ -119,6 +127,7 @@ export default function Home() {
       <ResultView
         name={name} results={results} loading={loading}
         error={error} canAct={canAct} displayRef={displayRef}
+        flipping={flipping}
         onShuffle={shuffle} onReset={reset} onSearch={searchName}
       />
     );
@@ -240,6 +249,11 @@ export default function Home() {
               {error}
             </p>
           )}
+          <div style={{ marginTop: "1rem", textAlign: "center" }}>
+            <a href="/battle" style={{ fontSize: "clamp(0.52rem,1.5vw,0.62rem)", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", textDecoration: "none" }}>
+              ⚔ Name Battle
+            </a>
+          </div>
         </form>
       </section>
 
@@ -267,10 +281,11 @@ export default function Home() {
 interface ResultViewProps {
   name: string; results: LetterResult[]; loading: boolean;
   error: string; canAct: boolean; displayRef: React.RefObject<HTMLDivElement>;
+  flipping?: boolean;
   onShuffle: () => void; onReset: () => void; onSearch: (name: string) => void;
 }
 
-function ResultView({ name, results, loading, error, canAct, displayRef, onShuffle, onReset, onSearch }: ResultViewProps) {
+function ResultView({ name, results, loading, error, canAct, displayRef, flipping, onShuffle, onReset, onSearch }: ResultViewProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
 
@@ -315,6 +330,9 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
             <Dices size={13} aria-hidden />
             <span className="hidden sm:inline">Random</span>
           </button>
+          <a href="/battle" className="hidden sm:inline-flex items-center gap-1" style={{ fontSize: "clamp(0.52rem,1.5vw,0.62rem)", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", textDecoration: "none" }}>
+            ⚔ Battle
+          </a>
           <span style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.6rem)", fontWeight: 500, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.18)" }}>
             Built by{" "}
             <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
@@ -379,7 +397,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, onShuff
         {error && <p className="mb-3 text-xs sm:text-sm" style={{ color: "#f87171" }}>{error}</p>}
 
         {/* letter cards */}
-        <NameDisplay ref={displayRef} results={results} loading={loading} />
+        <NameDisplay ref={displayRef} results={results} loading={loading} flipping={flipping} />
 
         {/* action buttons */}
         {results.length > 0 && (
