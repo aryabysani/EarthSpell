@@ -121,6 +121,27 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {/* stats */}
+      {(() => {
+        const unique = new Set(logs.map((l) => l.name)).size;
+        const freq = logs.reduce<Record<string, number>>((acc, l) => { acc[l.name] = (acc[l.name] ?? 0) + 1; return acc; }, {});
+        const top = Object.entries(freq).sort((a, b) => b[1] - a[1])[0];
+        return (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
+            {[
+              { label: "Total searches", value: logs.length },
+              { label: "Unique names", value: unique },
+              { label: "Most searched", value: top ? `${top[0]} (${top[1]}×)` : "—" },
+            ].map((s) => (
+              <div key={s.label} style={{ flex: "1 1 140px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", padding: "0.75rem 1rem" }}>
+                <p style={{ fontSize: "0.58rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "0.35rem" }}>{s.label}</p>
+                <p style={{ fontSize: "1.1rem", color: "#c9a84c", fontWeight: 700 }}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
+
       {/* tabs */}
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem" }}>
         {(["logs", "banned"] as const).map((t) => (
