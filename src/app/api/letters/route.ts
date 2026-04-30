@@ -35,9 +35,11 @@ export async function GET(request: NextRequest) {
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       request.headers.get("x-real-ip") ??
       "unknown";
+    const ua = request.headers.get("user-agent") ?? "unknown";
     await db.collection("search_logs").add({
       name,
       ip,
+      ua,
       ts: new Date().toISOString(),
     });
   }

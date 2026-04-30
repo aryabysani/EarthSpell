@@ -1,6 +1,5 @@
 "use client";
 
-import confetti from "canvas-confetti";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import type { LetterResult } from "@/types";
 import { LetterCard } from "./LetterCard";
@@ -16,30 +15,16 @@ export const NameDisplay = forwardRef<HTMLDivElement, NameDisplayProps>(function
   ref,
 ) {
   const loadedCount  = useRef(0);
-  const firedRef     = useRef(false);
   const [cardKey, setCardKey] = useState(0);
 
   // Reset counters when results change
   useEffect(() => {
     loadedCount.current = 0;
-    firedRef.current    = false;
     setCardKey((k) => k + 1);
   }, [results]);
 
   function onCardLoad() {
-    const total = results.filter((r) => r.char !== " " && r.image?.url).length;
     loadedCount.current += 1;
-    if (!firedRef.current && loadedCount.current >= total && total > 0) {
-      firedRef.current = true;
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.55 },
-        colors: ["#c9a84c", "#fff", "#e8d5a0", "#f0e68c"],
-        gravity: 1.2,
-        scalar: 0.85,
-      });
-    }
   }
 
   if (loading) {

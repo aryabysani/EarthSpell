@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Trash2, Plus, RefreshCw, LogOut } from "lucide-react";
 
 interface BannedWord { id: string; word: string; }
-interface LogEntry   { id: string; name: string; ip: string; ts: string; }
+interface LogEntry   { id: string; name: string; ip: string; ua?: string; ts: string; }
 
 function api(path: string, token: string, opts: RequestInit = {}) {
   return fetch(path, {
@@ -175,6 +175,7 @@ export default function AdminPage() {
                 <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
                   <th style={th}>Name</th>
                   <th style={th}>IP</th>
+                  <th style={th}>Browser / Device</th>
                   <th style={th}>Time</th>
                 </tr>
               </thead>
@@ -183,11 +184,12 @@ export default function AdminPage() {
                   <tr key={l.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                     <td style={{ ...td, color: "#fff", fontWeight: 600, letterSpacing: "0.1em" }}>{l.name}</td>
                     <td style={{ ...td, color: "rgba(255,255,255,0.35)" }}>{l.ip}</td>
+                    <td style={{ ...td, color: "rgba(255,255,255,0.28)", maxWidth: "260px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={l.ua}>{l.ua ?? "—"}</td>
                     <td style={{ ...td, color: "rgba(255,255,255,0.35)" }}>{new Date(l.ts).toLocaleString()}</td>
                   </tr>
                 ))}
                 {logs.length === 0 && (
-                  <tr><td colSpan={3} style={{ ...td, textAlign: "center", color: "rgba(255,255,255,0.2)", paddingTop: "2rem" }}>No logs yet</td></tr>
+                  <tr><td colSpan={4} style={{ ...td, textAlign: "center", color: "rgba(255,255,255,0.2)", paddingTop: "2rem" }}>No logs yet</td></tr>
                 )}
               </tbody>
             </table>
