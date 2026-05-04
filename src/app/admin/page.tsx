@@ -177,6 +177,7 @@ export default function AdminPage() {
                   <th style={th}>IP</th>
                   <th style={th}>Browser / Device</th>
                   <th style={th}>Time</th>
+                  <th style={th}></th>
                 </tr>
               </thead>
               <tbody>
@@ -186,10 +187,19 @@ export default function AdminPage() {
                     <td style={{ ...td, color: "rgba(255,255,255,0.35)" }}>{l.ip}</td>
                     <td style={{ ...td, color: "rgba(255,255,255,0.28)", maxWidth: "260px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={l.ua}>{l.ua ?? "—"}</td>
                     <td style={{ ...td, color: "rgba(255,255,255,0.35)" }}>{new Date(l.ts).toLocaleString()}</td>
+                    <td style={td}>
+                      <button
+                        onClick={async () => { await api("/api/admin/logs", token, { method: "DELETE", body: JSON.stringify({ id: l.id }) }); await load(token); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(248,113,113,0.5)", display: "flex", padding: 0 }}
+                        title="Delete this entry"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </td>
                   </tr>
                 ))}
                 {logs.length === 0 && (
-                  <tr><td colSpan={4} style={{ ...td, textAlign: "center", color: "rgba(255,255,255,0.2)", paddingTop: "2rem" }}>No logs yet</td></tr>
+                  <tr><td colSpan={5} style={{ ...td, textAlign: "center", color: "rgba(255,255,255,0.2)", paddingTop: "2rem" }}>No logs yet</td></tr>
                 )}
               </tbody>
             </table>

@@ -46,6 +46,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [flipping, setFlipping] = useState(false);
   const displayRef = useRef<HTMLDivElement>(null);
+  const lastFetched = useRef("");
 
   useEffect(() => {
     const q = new URLSearchParams(window.location.search).get("name");
@@ -62,6 +63,9 @@ export default function Home() {
       setError(""); setLoading(false);
       return;
     }
+    // Skip if we already fetched this exact name (prevents double-log from state batching)
+    if (lastFetched.current === name) return;
+    lastFetched.current = name;
     const ctrl = new AbortController();
     const t = window.setTimeout(async () => {
       setLoading(true); setError("");
@@ -103,8 +107,8 @@ export default function Home() {
   async function doZoomThen(n: string) {
     setName(n);
     setError("");
-    // Check banned before zooming
-    const res = await fetch(`/api/letters?chars=${encodeChars(n)}`);
+    // Preflight banned check — ?check=1 skips logging on the server
+    const res = await fetch(`/api/letters?chars=${encodeChars(n)}&check=1`);
     if (res.status === 403) { setError("This word is banned gang 🚫"); return; }
     setZooming(true);
     window.setTimeout(() => { setZooming(false); setSubmitted(true); }, 900);
@@ -115,11 +119,11 @@ export default function Home() {
     if (name.trim()) doZoomThen(name);
   }
 
-  function reset() { setSubmitted(false); setResults([]); setName(""); }
+  function reset() { setSubmitted(false); setResults([]); setName(""); lastFetched.current = ""; }
 
   function searchName(newName: string) {
     const v = newName.toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 12).trim();
-    if (v) { setName(v); setSubmitted(true); }
+    if (v) { lastFetched.current = ""; setName(v); setSubmitted(true); }
   }
 
   if (submitted) {
@@ -215,8 +219,6 @@ export default function Home() {
         >
           Ever wondered how your name would look if it were spelled on Earth?{" "}
           <span style={{ color: "rgba(255,255,255,0.6)" }}>Check it out.</span>
-          <br /><br />
-          100% real NASA Landsat satellite images — not AI generated. Every letter is a real place on Earth, with exact coordinates and location names.
         </p>
 
         {/* form */}
@@ -260,6 +262,9 @@ export default function Home() {
         className="absolute bottom-4 left-0 right-0 z-20 flex flex-col items-center gap-1"
         style={{ opacity: zooming ? 0 : 1, transition: "opacity 0.3s" }}
       >
+        <p style={{ fontSize: "clamp(0.48rem, 1.3vw, 0.58rem)", fontWeight: 400, letterSpacing: "0.06em", color: "rgba(255,255,255,0.25)", marginBottom: "0.2rem", textAlign: "center", maxWidth: "min(90vw, 32rem)", lineHeight: 1.5 }}>
+          100% real NASA Landsat satellite images — not AI generated. Every letter is a real place on Earth, with exact coordinates and location names.
+        </p>
         <p style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.62rem)", fontWeight: 500, letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
           Images credit:{" "}
           <a href="https://www.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>NASA</a>

@@ -14,9 +14,16 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ logs });
 }
 
-// DELETE — clear all logs
+// DELETE — { id } deletes one log, no body deletes all
 export async function DELETE(request: NextRequest) {
   if (!auth(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const body = await request.json() as { id?: string };
+    if (body.id) {
+      await db.collection("search_logs").doc(body.id).delete();
+      return NextResponse.json({ ok: true, deleted: 1 });
+    }
+  } catch { /* no body = clear all */ }
   const snap = await db.collection("search_logs").get();
   const batch = db.batch();
   snap.docs.forEach((d) => batch.delete(d.ref));

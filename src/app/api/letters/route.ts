@@ -29,8 +29,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "banned", results: [] }, { status: 403 });
   }
 
-  // Log the search (skip single-char or empty)
-  if (name.trim().length > 1) {
+  // Log the search (skip single-char, empty, or preflight banned checks)
+  const isCheck = request.nextUrl.searchParams.get("check") === "1";
+  if (!isCheck && name.trim().length > 1) {
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       request.headers.get("x-real-ip") ??
