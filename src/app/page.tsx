@@ -213,6 +213,9 @@ export default function Home() {
             maxWidth: "min(90vw, 26rem)",
           }}
         >
+          Ever wondered how your name would look if it were spelled on Earth?{" "}
+          <span style={{ color: "rgba(255,255,255,0.6)" }}>Check it out.</span>
+          <br /><br />
           100% real NASA Landsat satellite images — not AI generated. Every letter is a real place on Earth, with exact coordinates and location names.
         </p>
 
@@ -249,11 +252,6 @@ export default function Home() {
               {error}
             </p>
           )}
-          <div style={{ marginTop: "1rem", textAlign: "center" }}>
-            <a href="/battle" style={{ fontSize: "clamp(0.52rem,1.5vw,0.62rem)", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", textDecoration: "none" }}>
-              ⚔ Name Battle
-            </a>
-          </div>
         </form>
       </section>
 
@@ -330,10 +328,7 @@ function ResultView({ name, results, loading, error, canAct, displayRef, flippin
             <Dices size={13} aria-hidden />
             <span className="hidden sm:inline">Random</span>
           </button>
-          <a href="/battle" className="hidden sm:inline-flex items-center gap-1" style={{ fontSize: "clamp(0.52rem,1.5vw,0.62rem)", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", textDecoration: "none" }}>
-            ⚔ Battle
-          </a>
-          <span style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.6rem)", fontWeight: 500, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.18)" }}>
+<span style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.6rem)", fontWeight: 500, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.18)" }}>
             Built by{" "}
             <a href="https://aryab.in" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 700, textDecoration: "none" }}>arya</a>
           </span>

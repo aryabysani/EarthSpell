@@ -26,7 +26,7 @@ export function NameInput({ value, onChange, onRandom }: NameInputProps) {
           letterSpacing: "0.28em",
           fontSize: "clamp(1rem, 2.5vw, 1.4rem)",
           textShadow: "0 1px 6px rgba(0,0,0,1)",
-          paddingRight: onRandom ? "2.5rem" : undefined,
+          paddingRight: onRandom ? "4.5rem" : undefined,
         }}
         className="h-14 w-full border-b border-white/40 bg-transparent text-center uppercase text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#c9a84c]"
       />
@@ -35,10 +35,11 @@ export function NameInput({ value, onChange, onRandom }: NameInputProps) {
           type="button"
           onClick={onRandom}
           title="Random name"
-          className="absolute right-0 flex h-8 w-8 items-center justify-center transition hover:text-white"
-          style={{ color: "#c9a84c" }}
+          className="absolute right-0 flex items-center gap-1 transition hover:text-white"
+          style={{ color: "#c9a84c", fontSize: "clamp(0.48rem, 1.3vw, 0.58rem)", letterSpacing: "0.18em", textTransform: "uppercase" }}
         >
-          <Dices size={16} aria-hidden />
+          <Dices size={14} aria-hidden />
+          <span>Random</span>
         </button>
       )}
     </div>
