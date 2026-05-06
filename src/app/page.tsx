@@ -157,6 +157,7 @@ export default function Home() {
         }}
       >
         <source src="https://storage.googleapis.com/earthspell-34aed.firebasestorage.app/earth-bg.mp4" type="video/mp4" />
+        <source src="/earth-bg.mp4" type="video/mp4" />
       </video>
 
       {/* overlay */}
