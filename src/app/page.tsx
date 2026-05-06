@@ -263,7 +263,7 @@ export default function Home() {
         className="absolute bottom-4 left-0 right-0 z-20 flex flex-col items-center gap-1"
         style={{ opacity: zooming ? 0 : 1, transition: "opacity 0.3s" }}
       >
-        <p style={{ fontSize: "clamp(0.48rem, 1.3vw, 0.58rem)", fontWeight: 400, letterSpacing: "0.06em", color: "rgba(255,255,255,0.25)", marginBottom: "0.2rem", textAlign: "center", maxWidth: "min(90vw, 32rem)", lineHeight: 1.5 }}>
+        <p style={{ fontSize: "clamp(0.65rem, 1.7vw, 0.78rem)", fontWeight: 500, letterSpacing: "0.04em", color: "rgba(255,255,255,0.65)", marginBottom: "0.3rem", textAlign: "center", maxWidth: "min(90vw, 36rem)", lineHeight: 1.6 }}>
           100% real NASA Landsat satellite images — not AI generated. Every letter is a real place on Earth, with exact coordinates and location names.
         </p>
         <p style={{ fontSize: "clamp(0.5rem, 1.4vw, 0.62rem)", fontWeight: 500, letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
