@@ -13,14 +13,11 @@ firebase_admin.initialize_app(cred, {
 })
 db = firestore.client()
 
-BASE_URL = "https://earthspell.vercel.app/landsat"
-
 def to_vercel_url(url: str) -> str:
     filename = url.split("/")[-1]
-    # ensure .webp
     if not filename.endswith(".webp"):
         filename = filename.rsplit(".", 1)[0] + ".webp"
-    return f"{BASE_URL}/{filename}"
+    return f"/landsat/{filename}"
 
 def main():
     letters_ref = db.collection("letters")
@@ -33,7 +30,7 @@ def main():
 
         for img in images:
             old_url = img.get("url", "")
-            if "firebasestorage" in old_url or "storage.googleapis.com" in old_url:
+            if "firebasestorage" in old_url or "storage.googleapis.com" in old_url or "earthspell.vercel.app" in old_url:
                 img["url"] = to_vercel_url(old_url)
                 changed = True
 
